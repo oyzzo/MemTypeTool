@@ -9,6 +9,7 @@ To run the **MemTypeTool**:
 `python main.py`
 
 ##About
-Miguel Angel Borrego
-Noel Carriquí
-[www.area0x33.com](http://www.area0x33.com)
+
+*Miguel Angel Borrego
+*Noel Carriquí
+*[www.area0x33.com](http://www.area0x33.com)
