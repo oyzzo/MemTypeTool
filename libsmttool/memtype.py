@@ -448,6 +448,20 @@ class memtype:
 
         return block
 
+    def isLocked(self):
+        lockedErrorCode = 0xF6
+        pkt = array('B', [5, 0, 0, 0, 0, 0, 0, 0])
+
+        if self.printDebug: print pkt.tolist()
+
+        if(usbhidSetReport(self.dev, pkt, self.reportId) != 8):
+            if self.printDebug: print "ERR Set Report"
+            return None
+
+        answer = usbhidGetReport(self.dev, self.reportId, 8)
+        return answer[1] == lockedErrorCode
+
+
 
 if __name__ == '__main__':
     # Search for the memtype and read hid data
@@ -457,7 +471,6 @@ if __name__ == '__main__':
     cl = decryptCredentialList(block, key=pinToKey("0000"))
     for i in range(len(cl)):
         cl[i].name = "credName%d" % i
-
     block = encryptCredentialList(cl, key=pinToKey("0000"))
     m.write(block)
     m.disconnect()

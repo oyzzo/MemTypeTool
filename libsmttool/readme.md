@@ -26,6 +26,8 @@ Public methods implemented in memtype.py file:
    1.3 info (read info from device and return deviceInfo object)
    1.4 write (write credentials to memtype credential reserved memory area, credential data must be encrypted first with the correct PIN)
    1.5 read (read credentials from memtype, must be decrypted after reading with the correct PIN)
+   1.6 isLocked (check status of the device, returns True if memtype PIN has not been entered)
+
 
 2. decryptCredentialList(cl, key) (decrypts credential list according to device implementation)
 3. encryptCredentialList(cl, key) (encrypts credential list according to device implementation)
