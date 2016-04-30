@@ -29,5 +29,27 @@ Public methods implemented in memtype.py file:
 
 2. decryptCredentialList(cl, key) (decrypts credential list according to device implementation)
 3. encryptCredentialList(cl, key) (encrypts credential list according to device implementation)
+```
 
+## Dependencies:
+```
+python 2.7
+libusb-1.0-0
+pyusb library
+```
+Linux:
+```
+$ sudo pip install pyusb
+```
+Mac:
+```
+$ sudo port install py-pyusb
+```
+Dependencies:
+python 2.7
+pyusb library
+
+Mac:
+```
+sudo port install py-pyusb
 ```
