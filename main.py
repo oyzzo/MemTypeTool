@@ -73,13 +73,30 @@ class Window(QMainWindow):
     def printCancel(self):
         print "CANCEL PRESSED!"
 
+    def showErrorMessage(self,msg):
+        result = QMessageBox.critical(self, "Error", msg)
+
     def readButton(self):
-        self.m = memtype()
-        #self.m.info()
-        self.block = self.m.read()
-        self.m.disconnect()
-        self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
-        if ok:
+        isDevice = True;
+        self.isLocked = True;
+
+        #Read from device
+        try:
+            self.m = memtype()
+            self.block = self.m.read()
+            self.isLocked = self.m.isLocked()
+            self.m.disconnect()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+            self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+        if isDevice and ok:
             self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
             #clean list of credentials
             self.centCredList.clearCredentials()
