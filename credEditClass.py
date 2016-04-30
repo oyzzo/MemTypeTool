@@ -11,7 +11,7 @@ class credEdit(QWidget):
 
     #Constructor
     def __init__(self):
-        super().__init__() #Call super class constructor
+        super(QWidget,self).__init__() #Call super class constructor
 
         #Create credEdit Form Layout
         self.credLayout = QFormLayout()

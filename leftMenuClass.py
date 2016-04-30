@@ -8,7 +8,7 @@ class leftMenu(QWidget):
 
     #Constructor
     def __init__(self,buttonList):
-        super().__init__() #Call super class constructor
+        super(QWidget,self).__init__() #Call super class constructor
 
         #Create buttonList Layout
         self.buttonLayout = QHBoxLayout()
@@ -42,6 +42,6 @@ class leftMenu(QWidget):
 
 
     def buttonLeftClick(self):
-        print ('Clicked!')
+        print 'Clicked!'
 
 

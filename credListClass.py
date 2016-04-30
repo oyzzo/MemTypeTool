@@ -5,7 +5,7 @@ class credItem(QWidget):
     """This class creates a credential item widget"""
     #Constructor
     def __init__(self,crd):
-        super().__init__() #Call super class constructor
+        super(QWidget,self).__init__() #Call super class constructor
 
         #Create the elements of the credential
         self.crdLabel = QLabel(crd)
@@ -42,8 +42,8 @@ class credList(QWidget):
     """This class creates the main credentials list"""
 
     #Constructor
-    def __init__(self,crdList):
-        super().__init__() #Call super class constructor
+    def __init__(self,crdList=()):
+        super(QWidget,self).__init__() #Call super class constructor
 
         #Create credList container widget
         self.credWidget = QWidget()
@@ -84,4 +84,8 @@ class credList(QWidget):
         self.credLayout.addWidget(self.credential)
         self.credWidget.adjustSize()
 
+    def clearCredentials(self):
+        """method for deleting all credentials in the list"""
 
+        for i in reversed(range(self.credLayout.count())):
+            self.credLayout.itemAt(i).widget().setParent(None)
