@@ -51,5 +51,5 @@ pyusb library
 
 Mac:
 ```
-sudo port install py-pyusb
+sudo port install py-pyusb-devel
 ```
