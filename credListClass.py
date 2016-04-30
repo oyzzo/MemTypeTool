@@ -5,7 +5,7 @@ class credItem(QWidget):
     """This class creates a credential item widget"""
     #Constructor
     def __init__(self,crd):
-        super().__init__() #Call super class constructor
+        super(QWidget,self).__init__() #Call super class constructor
 
         #Create the elements of the credential
         self.crdLabel = QLabel(crd)
@@ -43,7 +43,7 @@ class credList(QWidget):
 
     #Constructor
     def __init__(self,crdList):
-        super().__init__() #Call super class constructor
+        super(QWidget,self).__init__() #Call super class constructor
 
         #Create credList container widget
         self.credWidget = QWidget()

@@ -10,7 +10,7 @@ class Window(QMainWindow):
 
     #Constructor
     def __init__(self):
-        super().__init__() #Call super class constructor
+        super(QMainWindow,self).__init__() #Call super class constructor
 
         #Set Title
         self.setWindowTitle("MtTool - area0x33")
@@ -64,13 +64,13 @@ class Window(QMainWindow):
         self.setCentralWidget(self.mainWidget)
 
     def printOk(self):
-        print("OK PRESSED!")
+        print "OK PRESSED!"
 
     def printCancel(self):
-        print("CANCEL PRESSED!")
+        print "CANCEL PRESSED!"
 
     def menuClicked(self,button):
-        print("%s CLICKED" %(button))
+        print "%s CLICKED" %(button)
         #Check what menu button was pressed!
         if(button == "Set Pin"):
             text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
