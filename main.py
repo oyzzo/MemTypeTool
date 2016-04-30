@@ -5,6 +5,8 @@ from leftMenuClass import *
 from credListClass import *
 from credEditClass import *
 
+from libsmttool.memtype import *
+
 class Window(QMainWindow):
     """This class creates a main window"""
 
@@ -44,13 +46,14 @@ class Window(QMainWindow):
         self.centLayout = QVBoxLayout()
         self.centLayout.addWidget(self.menu)
         #TODO FORM TEST
-       # self.centCredList = credList(("Gmail", "Skype", "Work Sftp1", "WrkLaptop", "WrkSkype", "WrkWebAdmin", "WrkServer1SSH"))
-       # self.centLayout.addWidget(self.centCredList)
-        self.centCredEdit = credEdit()
-        self.centLayout.addWidget(self.centCredEdit)
+        #self.centCredList = credList(("Gmail", "Skype", "Work Sftp1", "WrkLaptop", "WrkSkype", "WrkWebAdmin", "WrkServer1SSH"))
+        self.centCredList = credList()
+        self.centLayout.addWidget(self.centCredList)
+        #self.centCredEdit = credEdit()
+        #self.centLayout.addWidget(self.centCredEdit)
 
-        self.centCredEdit.okPressed.connect(self.printOk)
-        self.centCredEdit.cancelPressed.connect(self.printCancel)
+        #self.centCredEdit.okPressed.connect(self.printOk)
+        #self.centCredEdit.cancelPressed.connect(self.printCancel)
 
 
         #Create Main Layout
@@ -63,17 +66,34 @@ class Window(QMainWindow):
         self.mainWidget.setLayout(self.mainLayout)
         self.setCentralWidget(self.mainWidget)
 
+
     def printOk(self):
         print "OK PRESSED!"
 
     def printCancel(self):
         print "CANCEL PRESSED!"
 
+    def readButton(self):
+        self.m = memtype()
+        #self.m.info()
+        self.block = self.m.read()
+        self.m.disconnect()
+        self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:')
+        self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
+        #clean list of credentials
+        self.centCredList.clearCredentials()
+        for cr in self.cl:
+            print cr
+            self.centCredList.addCredential(cr.name)
+
+
     def menuClicked(self,button):
         print "%s CLICKED" %(button)
         #Check what menu button was pressed!
         if(button == "Set Pin"):
             text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
+        elif(button == "Read"):
+            self.readButton()
         elif(button == "Import File"):
             inFile = QFileDialog.getOpenFileName(self, 'Import File','./')
         elif(button == "Export File"):
