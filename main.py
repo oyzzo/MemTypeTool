@@ -10,6 +10,7 @@ from libsmttool.memtype import *
 class Window(QMainWindow):
     """This class creates a main window"""
 
+
     #Constructor
     def __init__(self):
         super(QMainWindow,self).__init__() #Call super class constructor
@@ -100,10 +101,36 @@ class Window(QMainWindow):
             self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
             #clean list of credentials
             self.centCredList.clearCredentials()
+            #and add all the credentials to the list
             for cr in self.cl:
-                print cr
                 self.centCredList.addCredential(cr.name)
 
+    def writeButton(self):
+        isDevice = True;
+        self.isLocked = True;
+
+        #Check device
+        try:
+            self.m = memtype()
+            self.isLocked = self.m.isLocked()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+            self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+        if isDevice and ok:
+            #Write to device
+            try:
+                block = encryptCredentialList(self.cl, key=pinToKey(str(self.text)))
+                self.m.write(block)
+                self.m.disconnect()
+            except Exception:
+                self.showErrorMessage("Error writting to device!")
 
     def menuClicked(self,button):
         print "%s CLICKED" %(button)
@@ -112,6 +139,8 @@ class Window(QMainWindow):
             text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
         elif(button == "Read"):
             self.readButton()
+        elif(button == "Write"):
+            self.writeButton()
         elif(button == "Import File"):
             inFile = QFileDialog.getOpenFileName(self, 'Import File','./')
         elif(button == "Export File"):
