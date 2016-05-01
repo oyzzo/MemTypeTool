@@ -521,6 +521,56 @@ class memtype:
 
         return hash
 
+    def writeKeyboardLayout(self, inputFile=""):
+        # 1 - Read inputFile
+        keyboardText = ""
+        keyboardLayout = []
+        with open(inputFile, 'r') as f:
+            keyboardText = f.read()
+
+        # 2 - Split Keyboard and convert to array
+        for key in keyboardText.split(","):
+            keyboardLayout.append(int(key))
+
+        # 3 - Write Keyboard to Memtype
+        if(len(keyboardLayout) != 128):
+            if self.printDebug: print "ERR keyboardLayout must have size 128"
+            return None
+
+        # Prepare WritePin CMD
+        pkt = array('B', [9, 0, 0, 0, 0, 0, 0, 0])
+        if (usbhidSetReport(self.dev, pkt, self.reportId) != 8):
+            if self.printDebug: print "ERR Set Report"
+            return None
+
+        # Check CMD sent successfully
+        answer = usbhidGetReport(self.dev, self.reportId, 8)
+        if (pkt.tolist() != answer):
+            if self.printDebug:
+                print "Packet: ", pkt.tolist()
+                print "Answer: ", answer
+                print "ERR pkt != answer"
+
+        # Send DATA, wait 50ms between transfers
+        for i in range(0, len(keyboardLayout), 8):
+            # Prepare packet
+            pkt = array('B', keyboardLayout[i:i + 8])
+            if (usbhidSetReport(self.dev, pkt, self.reportId) != 8):
+                if self.printDebug: print "ERR Set Report"
+                return None
+
+            answer = usbhidGetReport(self.dev, self.reportId, 8)
+            if (pkt.tolist() != answer):
+                if self.printDebug:
+                    print "Packet: ", pkt.tolist()
+                    print "Answer: ", answer
+                    print "ERR pkt != answer"
+
+            # 50ms to let memtype do usbInterruptIsReady
+            time.sleep(0.05)
+
+        return keyboardLayout
+
     def isLocked(self):
         lockedErrorCode = 0xF6
         pkt = array('B', [5, 0, 0, 0, 0, 0, 0, 0])
