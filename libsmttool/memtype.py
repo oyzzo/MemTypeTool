@@ -85,6 +85,19 @@ def pinToKey(pinStr=""):
 
     return key
 
+"""
+Input: pin in string format "0000" to "9999" 4 digits
+Output: memtype pin in Hash Format
+"""
+def pinToHash(pinStr=""):
+
+    # Pin 1234 is shown in the device as 4321
+    # so pin string needs to be reversed
+    pStr = pinStr[::-1]
+    key1 = pinToKey(pStr)
+    key2 = pinToKey(pStr)
+    return ungroup32to8(NoekeonEncrypt(key1, key2))
+
 
 """
 Input: Credential List
@@ -214,7 +227,7 @@ USB GetReport for HID USB device
 """
 def usbhidGetReport(device, reportId, l):
     # bmRequestType, bmRequest, wValue            wIndex
-    buff = device.ctrl_transfer(0xA0, 0x01, 0x0300 | reportId, 0, l, 5000);
+    buff = device.ctrl_transfer(0xA0, 0x01, 0x0300 | reportId, 0, l, 5000)
     if buff == None:
         print "Error usbhidGetReport"
         return []
@@ -448,6 +461,66 @@ class memtype:
 
         return block
 
+    def writePinHash(self, hash=[]):
+        if (len(hash) != 16):
+            if self.printDebug: print "ERR wrong hash size !"
+            return None
+
+        # Prepare WritePin CMD
+        pkt = array('B', [7, 0, 0, 0, 0, 0, 0, 0])
+        if (usbhidSetReport(self.dev, pkt, self.reportId) != 8):
+            if self.printDebug: print "ERR Set Report"
+            return None
+        # Check CMD sent successfully
+        answer = usbhidGetReport(self.dev, self.reportId, 8)
+        if (pkt.tolist() != answer):
+            if self.printDebug:
+                print "Packet: ", pkt.tolist()
+                print "Answer: ", answer
+                print "ERR pkt != answer"
+
+        # Send DATA, wait 50ms between transfers
+        for i in range(0, len(hash), 8):
+            # Prepare packet
+            pkt = array('B', hash[i:i + 8])
+            if (usbhidSetReport(self.dev, pkt, self.reportId) != 8):
+                if self.printDebug: print "ERR Set Report"
+                return None
+
+            answer = usbhidGetReport(self.dev, self.reportId, 8)
+            if (pkt.tolist() != answer):
+                if self.printDebug:
+                    print "Packet: ", pkt.tolist()
+                    print "Answer: ", answer
+                    print "ERR pkt != answer"
+
+            # 50ms to let memtype do usbInterruptIsReady
+            time.sleep(0.05)
+
+        return hash
+
+    def readPinHash(self):
+        pkt = array('B', [8, 0, 0, 0, 0, 0, 0, 0])
+        hashSize = 16
+
+        if(usbhidSetReport(self.dev, pkt, self.reportId) != 8):
+            if self.printDebug: print "ERR Set Report"
+            return None
+
+        answer = usbhidGetReport(self.dev, self.reportId, 8)
+        if (pkt.tolist() != answer):
+            if self.printDebug:
+                print "Packet: ", pkt.tolist()
+                print "Answer: ", answer
+                print "ERR pkt != answer"
+
+        hash = []
+        for msg in range(0, hashSize, 8):
+            answer = usbhidGetReport(self.dev, self.reportId, 8)
+            hash.extend(answer)
+
+        return hash
+
     def isLocked(self):
         lockedErrorCode = 0xF6
         pkt = array('B', [5, 0, 0, 0, 0, 0, 0, 0])
@@ -461,7 +534,8 @@ class memtype:
         answer = usbhidGetReport(self.dev, self.reportId, 8)
         return answer[1] == lockedErrorCode
 
-
+    def validatePin(self, pin):
+        return (self.readPinHash() == pinToHash(pin))
 
 if __name__ == '__main__':
     # Search for the memtype and read hid data
