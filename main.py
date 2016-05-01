@@ -144,6 +144,34 @@ class Window(QMainWindow):
             except Exception:
                 self.showErrorMessage("Error writting to device!")
 
+    def setKeyboardButton(self):
+        isDevice = True;
+        self.isLocked = True;
+
+        #Check device
+        try:
+            self.m = memtype()
+            self.isLocked = self.m.isLocked()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+             inFile= QFileDialog.getOpenFileName(self, 'Choose KeyLayout')
+        if isDevice and str(inFile) != "":
+            #Write to device
+            try:
+                self.m.writeKeyboardLayout(str(inFile))
+                self.m.disconnect()
+            except Exception:
+                self.showErrorMessage("Error writting to device!")
+
+
+
     def menuClicked(self,button):
         print "%s CLICKED" %(button)
         #Check what menu button was pressed!
@@ -158,8 +186,7 @@ class Window(QMainWindow):
         elif(button == "Export File"):
             inFile = QFileDialog.getOpenFileName(self, 'Export File')
         elif(button == "Set KeyLayout"):
-            inFile = QFileDialog.getOpenFileName(self, 'Choose KeyLayout')
-
+            self.setKeyboardButton()
 
 
 def main():
