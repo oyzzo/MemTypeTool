@@ -78,13 +78,14 @@ class Window(QMainWindow):
         #self.m.info()
         self.block = self.m.read()
         self.m.disconnect()
-        self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:')
-        self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
-        #clean list of credentials
-        self.centCredList.clearCredentials()
-        for cr in self.cl:
-            print cr
-            self.centCredList.addCredential(cr.name)
+        self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+        if ok:
+            self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
+            #clean list of credentials
+            self.centCredList.clearCredentials()
+            for cr in self.cl:
+                print cr
+                self.centCredList.addCredential(cr.name)
 
 
     def menuClicked(self,button):
