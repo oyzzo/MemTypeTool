@@ -10,6 +10,7 @@ from libsmttool.memtype import *
 class Window(QMainWindow):
     """This class creates a main window"""
 
+    cl = []
 
     #Constructor
     def __init__(self):
@@ -49,6 +50,7 @@ class Window(QMainWindow):
         #TODO FORM TEST
         #self.centCredList = credList(("Gmail", "Skype", "Work Sftp1", "WrkLaptop", "WrkSkype", "WrkWebAdmin", "WrkServer1SSH"))
         self.centCredList = credList()
+        self.centCredList.newCredential.connect(self.addNewCredential)
         self.centLayout.addWidget(self.centCredList)
         #self.centCredEdit = credEdit()
         #self.centLayout.addWidget(self.centCredEdit)
@@ -73,6 +75,16 @@ class Window(QMainWindow):
 
     def printCancel(self):
         print "CANCEL PRESSED!"
+
+    def addNewCredential(self):
+        """ Add credential to self.cl"""
+        cred = credential()
+        cred.name = "New Credential"
+        cred.user = "user"
+        cred.hop = "\t"
+        cred.passw = "P455W0RD"
+        cred.submit = "\n"
+        self.cl.append(cred)
 
     def showErrorMessage(self,msg):
         result = QMessageBox.critical(self, "Error", msg)
