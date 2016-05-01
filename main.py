@@ -10,6 +10,8 @@ from libsmttool.memtype import *
 class Window(QMainWindow):
     """This class creates a main window"""
 
+    cl = []
+
     #Constructor
     def __init__(self):
         super(QMainWindow,self).__init__() #Call super class constructor
@@ -48,6 +50,7 @@ class Window(QMainWindow):
         #TODO FORM TEST
         #self.centCredList = credList(("Gmail", "Skype", "Work Sftp1", "WrkLaptop", "WrkSkype", "WrkWebAdmin", "WrkServer1SSH"))
         self.centCredList = credList()
+        self.centCredList.newCredential.connect(self.addNewCredential)
         self.centLayout.addWidget(self.centCredList)
         #self.centCredEdit = credEdit()
         #self.centLayout.addWidget(self.centCredEdit)
@@ -73,20 +76,73 @@ class Window(QMainWindow):
     def printCancel(self):
         print "CANCEL PRESSED!"
 
+    def addNewCredential(self):
+        """ Add credential to self.cl"""
+        cred = credential()
+        cred.name = "New Credential"
+        cred.user = "user"
+        cred.hop = "\t"
+        cred.passw = "P455W0RD"
+        cred.submit = "\n"
+        self.cl.append(cred)
+
+    def showErrorMessage(self,msg):
+        result = QMessageBox.critical(self, "Error", msg)
+
     def readButton(self):
-        self.m = memtype()
-        #self.m.info()
-        self.block = self.m.read()
-        self.m.disconnect()
-        self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
-        if ok:
+        isDevice = True;
+        self.isLocked = True;
+
+        #Read from device
+        try:
+            self.m = memtype()
+            self.block = self.m.read()
+            self.isLocked = self.m.isLocked()
+            self.m.disconnect()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+            self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+        if isDevice and ok:
             self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
             #clean list of credentials
             self.centCredList.clearCredentials()
+            #and add all the credentials to the list
             for cr in self.cl:
-                print cr
                 self.centCredList.addCredential(cr.name)
 
+    def writeButton(self):
+        isDevice = True;
+        self.isLocked = True;
+
+        #Check device
+        try:
+            self.m = memtype()
+            self.isLocked = self.m.isLocked()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+            self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+        if isDevice and ok:
+            #Write to device
+            try:
+                block = encryptCredentialList(self.cl, key=pinToKey(str(self.text)))
+                self.m.write(block)
+                self.m.disconnect()
+            except Exception:
+                self.showErrorMessage("Error writting to device!")
 
     def menuClicked(self,button):
         print "%s CLICKED" %(button)
@@ -95,6 +151,8 @@ class Window(QMainWindow):
             text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
         elif(button == "Read"):
             self.readButton()
+        elif(button == "Write"):
+            self.writeButton()
         elif(button == "Import File"):
             inFile = QFileDialog.getOpenFileName(self, 'Import File','./')
         elif(button == "Export File"):

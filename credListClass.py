@@ -3,6 +3,8 @@ from PyQt4.QtCore import *
 
 class credItem(QWidget):
     """This class creates a credential item widget"""
+
+
     #Constructor
     def __init__(self,crd):
         super(QWidget,self).__init__() #Call super class constructor
@@ -12,10 +14,13 @@ class credItem(QWidget):
         self.dltIcon = QLabel()
         self.dltIcon.setPixmap(QPixmap("img/trashcan.png"))
         self.dltIcon.setAlignment(Qt.AlignRight)
+        self.dltIcon.mousePressEvent = self.deletePressEvent
         self.upIcon = QLabel()
         self.downIcon = QLabel()
         self.upIcon.setPixmap((QPixmap("img/up.png")))
+        self.upIcon.mousePressEvent = self.upPressEvent
         self.downIcon.setPixmap((QPixmap("img/down.png")))
+        self.downIcon.mousePressEvent = self.downPressEvent
 
         #Create Arrow Layout
         self.posLayout = QVBoxLayout()
@@ -37,9 +42,20 @@ class credItem(QWidget):
         self.selfLayout.addWidget(self.mainWidget)
         self.setLayout(self.selfLayout)
 
+    def mousePressEvent(self,event):
+        print "Credential Clicked!!!"
+    def deletePressEvent(self,event):
+        print "Credential Delete!!!"
+    def upPressEvent(self,event):
+        print "Credential UP!!"
+    def downPressEvent(self,event):
+        print "Credential DOWN!!"
 
 class credList(QWidget):
     """This class creates the main credentials list"""
+
+
+    newCredential = pyqtSignal()
 
     #Constructor
     def __init__(self,crdList=()):
@@ -68,7 +84,7 @@ class credList(QWidget):
         #Add new credential button
         self.newCred = QToolButton()
         self.newCred.setText("New")
-        self.newCred.clicked.connect(lambda: self.addCredential('New Credential'))
+        self.newCred.clicked.connect(self.addNewCredential)
         self.newCred.setIcon(QIcon("img/newcred.png"))
 
         #Scroll Area Layer add 
@@ -77,12 +93,17 @@ class credList(QWidget):
         self.vLayout.addWidget(self.newCred)
         self.setLayout(self.vLayout)
 
+    def addNewCredential(self):
+        self.addCredential('New Credential')
+        self.newCredential.emit()
+
     def addCredential(self,crd):
         """method to add a new credential to the list"""
 
         self.credential = credItem(crd)
         self.credLayout.addWidget(self.credential)
         self.credWidget.adjustSize()
+
 
     def clearCredentials(self):
         """method for deleting all credentials in the list"""
