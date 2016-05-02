@@ -1,4 +1,5 @@
 import sys
+import json
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from leftMenuClass import *
@@ -170,6 +171,12 @@ class Window(QMainWindow):
             except Exception:
                 self.showErrorMessage("Error writting to device!")
 
+    def exportFileButton(self):
+        outFileName = QFileDialog.getSaveFileName(self, 'Export File')
+
+        if str(outFileName) != "":
+            with open(str(outFileName),'wb') as outfile:
+                json.dump(self.cl,outfile)
 
 
     def menuClicked(self,button):
@@ -184,7 +191,7 @@ class Window(QMainWindow):
         elif(button == "Import File"):
             inFile = QFileDialog.getOpenFileName(self, 'Import File','./')
         elif(button == "Export File"):
-            inFile = QFileDialog.getOpenFileName(self, 'Export File')
+            self.exportFileButton()
         elif(button == "Set KeyLayout"):
             self.setKeyboardButton()
 

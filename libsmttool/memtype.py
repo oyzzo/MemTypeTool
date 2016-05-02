@@ -3,6 +3,7 @@ import platform
 import time
 from array import array
 
+import make_json_serializable  # apply monkey-patch
 import usb.control
 import usb.core
 import usb.util
@@ -282,6 +283,14 @@ class credential:
     def __str__(self):
         # connect
         return "%s - %s - %s - %s - %s" % (self.name, self.user, self.hop, self.passw, self.submit)
+
+    def to_json(self): #Make it serializable
+        uName = self.name.decode('utf-8')
+        uUser = self.user.decode('utf-8')
+        uHop = self.hop.decode('utf-8')
+        uPassw = self.passw.decode('utf-8')
+        uSubmit = self.submit.decode('utf-8')
+        return "{u'name': %r, u'user': %r, u'hop': %r, u'passw': %r, u'submit':%r}"%(uName,uUser, uHop, uPassw, uSubmit)
 
     def encrypt(self, key):
         # STEP 1 add string to block
