@@ -28,8 +28,9 @@ Public methods implemented in memtype.py file:
    1.5 read (read credentials from memtype, must be decrypted after reading with the correct PIN)
    1.6 writePinHash (writes pin Hash into memtype, pinToHash function to be used to generate the Hash)
    1.7 readPinHash (reads pin Hash from memtype)
-   1.8 isLocked (check status of the device, returns True if memtype PIN has not been entered)
-   1.9 validatePin (when Memtype is unlocked, return True if pin is equal to memtype hash, return false otherwise)
+   1.8 writeKeyboardLayout (writes keyboard layout into memtype device)
+   1.9 isLocked (check status of the device, returns True if memtype PIN has not been entered)
+   1.10 validatePin (when Memtype is unlocked, return True if pin is equal to memtype hash, return false otherwise)
 
 
 2. decryptCredentialList(cl, key) (decrypts credential list according to device implementation)
