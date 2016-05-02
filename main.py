@@ -178,6 +178,29 @@ class Window(QMainWindow):
             with open(str(outFileName),'wb') as outfile:
                 json.dump(self.cl,outfile)
 
+    def importFileButton(self):
+        inFileName = QFileDialog.getOpenFileName(self, 'Import File','./')
+        if str(inFileName) != "":
+            with open(str(inFileName),'rb') as infile:
+                tl = json.load(infile)
+                #Clean credential list
+                self.cl = []
+                for c in tl:
+                    cred = json.loads(c)
+                    newCred = credential()
+                    newCred.name = cred['name']
+                    newCred.user = cred['user']
+                    newCred.hop = cred['hop']
+                    newCred.passw = cred['passw']
+                    newCred.submit = cred['submit']
+                    self.cl.append(newCred)
+
+            #clean list of credentials
+            self.centCredList.clearCredentials()
+            #and add all the credentials to the list
+            for cr in self.cl:
+                self.centCredList.addCredential(cr.name)
+
 
     def menuClicked(self,button):
         print "%s CLICKED" %(button)
@@ -189,7 +212,7 @@ class Window(QMainWindow):
         elif(button == "Write"):
             self.writeButton()
         elif(button == "Import File"):
-            inFile = QFileDialog.getOpenFileName(self, 'Import File','./')
+            self.importFileButton()
         elif(button == "Export File"):
             self.exportFileButton()
         elif(button == "Set KeyLayout"):
