@@ -223,13 +223,13 @@ class Window(QMainWindow):
             self.setKeyboardButton()
 
     def deleteClicked(self,position):
+        #Delete element from the credential list
         del self.cl[position]
+        #Update the window
         self.centCredList.clearCredentials()
         for i,cr in enumerate(self.cl):
             self.centCredList.addCredential(cr.name,i)
 
-
-        print "Deleted item %d"%(position)
 
 def main():
     #Create new application
