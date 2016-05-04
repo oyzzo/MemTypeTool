@@ -49,9 +49,9 @@ class Window(QMainWindow):
         self.centLayout = QVBoxLayout()
         self.centLayout.addWidget(self.menu)
         #TODO FORM TEST
-        #self.centCredList = credList(("Gmail", "Skype", "Work Sftp1", "WrkLaptop", "WrkSkype", "WrkWebAdmin", "WrkServer1SSH"))
         self.centCredList = credList()
         self.centCredList.newCredential.connect(self.addNewCredential)
+        self.centCredList.deleteClicked.connect(self.deleteClicked)
         self.centLayout.addWidget(self.centCredList)
         #self.centCredEdit = credEdit()
         #self.centLayout.addWidget(self.centCredEdit)
@@ -86,6 +86,10 @@ class Window(QMainWindow):
         cred.passw = "P455W0RD"
         cred.submit = "\n"
         self.cl.append(cred)
+        self.centCredList.clearCredentials()
+        for i,cr in enumerate(self.cl):
+            self.centCredList.addCredential(cr.name,i)
+
 
     def showErrorMessage(self,msg):
         result = QMessageBox.critical(self, "Error", msg)
@@ -115,8 +119,8 @@ class Window(QMainWindow):
             #clean list of credentials
             self.centCredList.clearCredentials()
             #and add all the credentials to the list
-            for cr in self.cl:
-                self.centCredList.addCredential(cr.name)
+            for i,cr in enumerate(self.cl):
+                self.centCredList.addCredential(cr.name,i)
 
     def writeButton(self):
         isDevice = True;
@@ -198,8 +202,8 @@ class Window(QMainWindow):
             #clean list of credentials
             self.centCredList.clearCredentials()
             #and add all the credentials to the list
-            for cr in self.cl:
-                self.centCredList.addCredential(cr.name)
+            for i,cr in enumerate(self.cl):
+                self.centCredList.addCredential(cr.name,i)
 
 
     def menuClicked(self,button):
@@ -218,6 +222,14 @@ class Window(QMainWindow):
         elif(button == "Set KeyLayout"):
             self.setKeyboardButton()
 
+    def deleteClicked(self,position):
+        del self.cl[position]
+        self.centCredList.clearCredentials()
+        for i,cr in enumerate(self.cl):
+            self.centCredList.addCredential(cr.name,i)
+
+
+        print "Deleted item %d"%(position)
 
 def main():
     #Create new application

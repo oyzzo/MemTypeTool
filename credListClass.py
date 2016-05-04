@@ -4,6 +4,11 @@ from PyQt4.QtCore import *
 class credItem(QWidget):
     """This class creates a credential item widget"""
 
+    position = 0 #Position on the credential list
+    upClicked = pyqtSignal(int)
+    downClicked = pyqtSignal(int)
+    deleteClicked = pyqtSignal(int)
+    openClicked = pyqtSignal(int)
 
     #Constructor
     def __init__(self,crd):
@@ -43,19 +48,23 @@ class credItem(QWidget):
         self.setLayout(self.selfLayout)
 
     def mousePressEvent(self,event):
-        print "Credential Clicked!!!"
+        self.openClicked.emit(self.position)
     def deletePressEvent(self,event):
-        print "Credential Delete!!!"
+        self.deleteClicked.emit(self.position)
     def upPressEvent(self,event):
-        print "Credential UP!!"
+        self.upClicked.emit(self.position)
     def downPressEvent(self,event):
-        print "Credential DOWN!!"
+        self.downClicked.emit(self.position)
 
 class credList(QWidget):
     """This class creates the main credentials list"""
 
 
     newCredential = pyqtSignal()
+    upClicked = pyqtSignal(int)
+    downClicked = pyqtSignal(int)
+    deleteClicked = pyqtSignal(int)
+    openClicked = pyqtSignal(int)
 
     #Constructor
     def __init__(self,crdList=()):
@@ -66,8 +75,8 @@ class credList(QWidget):
         #Create credList Layout
         self.credLayout = QVBoxLayout()
         #Add credentials to the layout
-        for crd in crdList:
-            self.addCredential(crd)
+        for i,crd in enumerate(crdList):
+            self.addCredential(crd.name,i)
 
         self.credWidget.setLayout(self.credLayout)
 
@@ -94,13 +103,14 @@ class credList(QWidget):
         self.setLayout(self.vLayout)
 
     def addNewCredential(self):
-        self.addCredential('New Credential')
         self.newCredential.emit()
 
-    def addCredential(self,crd):
+    def addCredential(self,crd,pos):
         """method to add a new credential to the list"""
 
         self.credential = credItem(crd)
+        self.credential.position = pos
+        self.credential.deleteClicked.connect(self.deletePress)
         self.credLayout.addWidget(self.credential)
         self.credWidget.adjustSize()
 
@@ -110,3 +120,14 @@ class credList(QWidget):
 
         for i in reversed(range(self.credLayout.count())):
             self.credLayout.itemAt(i).widget().setParent(None)
+
+
+    def mousePress(self,position):
+        self.openClicked.emit(position)
+    def deletePress(self,position):
+        self.deleteClicked.emit(position)
+    def upPress(self,position):
+        self.upClicked.emit(position)
+    def downPress(self,position):
+        self.downClicked.emit(position)
+
