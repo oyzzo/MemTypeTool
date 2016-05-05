@@ -54,13 +54,13 @@ class credEdit(QWidget):
     def getCredential(self):
         """Method to return the edited credential """
         cred = credential()
-        cred.name = self.crdNameEdit.text()
-        cred.user = self.crdUserEdit.text()
-        cred.hop = self.crdHopEdit.text()
+        cred.name = str(self.crdNameEdit.text())
+        cred.user = str(self.crdUserEdit.text())
+        cred.hop = str(self.crdHopEdit.text())
         cred.hop = str(cred.hop).replace("\\t","\t")
         cred.hop = str(cred.hop).replace("\\n","\n")
-        cred.passw = self.crdPassEdit.text()
-        cred.submit = self.crdSubmitEdit.text()
+        cred.passw = str(self.crdPassEdit.text())
+        cred.submit = str(self.crdSubmitEdit.text())
         cred.submit = str(cred.submit).replace("\\t","\t")
         cred.submit = str(cred.submit).replace("\\n","\n")
 

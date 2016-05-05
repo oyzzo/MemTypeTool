@@ -212,8 +212,19 @@ class Window(QMainWindow):
         outFileName = QFileDialog.getSaveFileName(self, 'Export File')
 
         if str(outFileName) != "":
+            #Convert to a list of dicts
+            tl = [] #Transformed list
+            for c in self.cl:
+                cd = {}
+                cd['name'] = c.name
+                cd['user'] = c.user
+                cd['hop'] = c.hop
+                cd['passw'] = c.passw
+                cd['submit'] = c.submit
+                tl.append(cd)
+
             with open(str(outFileName),'wb') as outfile:
-                json.dump(self.cl,outfile)
+                json.dump(tl,outfile)
 
     def importFileButton(self):
         inFileName = QFileDialog.getOpenFileName(self, 'Import File','./')
@@ -222,8 +233,7 @@ class Window(QMainWindow):
                 tl = json.load(infile)
                 #Clean credential list
                 self.cl = []
-                for c in tl:
-                    cred = json.loads(c)
+                for cred in tl:
                     newCred = credential()
                     newCred.name = cred['name']
                     newCred.user = cred['user']
