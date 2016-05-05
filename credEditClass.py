@@ -59,10 +59,12 @@ class credEdit(QWidget):
         cred.hop = str(self.crdHopEdit.text())
         cred.hop = str(cred.hop).replace("\\t","\t")
         cred.hop = str(cred.hop).replace("\\n","\n")
+        cred.hop = str(cred.hop).replace("\\s",str(unichr(22)))
         cred.passw = str(self.crdPassEdit.text())
         cred.submit = str(self.crdSubmitEdit.text())
         cred.submit = str(cred.submit).replace("\\t","\t")
         cred.submit = str(cred.submit).replace("\\n","\n")
+        cred.submit = str(cred.submit).replace("\\s",str(unichr(22))) 
 
         return (cred,self.position)
 
@@ -77,7 +79,10 @@ class credEdit(QWidget):
         self.crdHopEdit.setText(cred.hop)
         self.crdHopEdit.setText(str(self.crdHopEdit.text()).replace("\t","\\t"))
         self.crdHopEdit.setText(str(self.crdHopEdit.text()).replace("\n","\\n"))
+        self.crdHopEdit.setText(str(self.crdHopEdit.text()).replace(str(unichr(22)),"\\s"))
+
         self.crdPassEdit.setText(cred.passw)
         self.crdSubmitEdit.setText(cred.submit)
         self.crdSubmitEdit.setText(str(self.crdSubmitEdit.text()).replace("\t","\\t"))
         self.crdSubmitEdit.setText(str(self.crdSubmitEdit.text()).replace("\n","\\n"))
+        self.crdSubmitEdit.setText(str(self.crdSubmitEdit.text()).replace(str(unichr(22)),"\\s"))
