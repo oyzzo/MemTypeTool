@@ -235,11 +235,11 @@ class Window(QMainWindow):
                 self.cl = []
                 for cred in tl:
                     newCred = credential()
-                    newCred.name = cred['name']
-                    newCred.user = cred['user']
-                    newCred.hop = cred['hop']
-                    newCred.passw = cred['passw']
-                    newCred.submit = cred['submit']
+                    newCred.name = str(cred['name'])
+                    newCred.user = str(cred['user'])
+                    newCred.hop = str(cred['hop'])
+                    newCred.passw = str(cred['passw'])
+                    newCred.submit = str(cred['submit'])
                     self.cl.append(newCred)
 
             #clean list of credentials
