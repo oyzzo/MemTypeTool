@@ -1,6 +1,8 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from libsmttool.memtype import *
+
 class credEdit(QWidget):
     """This class creates a Credential edit form"""
 
@@ -8,6 +10,8 @@ class credEdit(QWidget):
     okPressed = pyqtSignal()
     cancelPressed = pyqtSignal()
 
+    #Position attribute
+    position = 0
 
     #Constructor
     def __init__(self):
@@ -47,11 +51,33 @@ class credEdit(QWidget):
         #Create the main Widget
         self.setLayout(self.credLayout)
 
-    def loadCredential(self,cred):
+    def getCredential(self):
+        """Method to return the edited credential """
+        cred = credential()
+        cred.name = self.crdNameEdit.text()
+        cred.user = self.crdUserEdit.text()
+        cred.hop = self.crdHopEdit.text()
+        cred.hop = str(cred.hop).replace("\\t","\t")
+        cred.hop = str(cred.hop).replace("\\n","\n")
+        cred.passw = self.crdPassEdit.text()
+        cred.submit = self.crdSubmitEdit.text()
+        cred.submit = str(cred.submit).replace("\\t","\t")
+        cred.submit = str(cred.submit).replace("\\n","\n")
+
+        return (cred,self.position)
+
+    def loadCredential(self,cred,pos):
         """Method to show credential into the form"""
+
+
+        self.position = pos
 
         self.crdNameEdit.setText(cred.name)
         self.crdUserEdit.setText(cred.user)
         self.crdHopEdit.setText(cred.hop)
+        self.crdHopEdit.setText(str(self.crdHopEdit.text()).replace("\t","\\t"))
+        self.crdHopEdit.setText(str(self.crdHopEdit.text()).replace("\n","\\n"))
         self.crdPassEdit.setText(cred.passw)
         self.crdSubmitEdit.setText(cred.submit)
+        self.crdSubmitEdit.setText(str(self.crdSubmitEdit.text()).replace("\t","\\t"))
+        self.crdSubmitEdit.setText(str(self.crdSubmitEdit.text()).replace("\n","\\n"))

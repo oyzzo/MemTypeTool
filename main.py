@@ -95,7 +95,15 @@ class Window(QMainWindow):
 
     def editOk(self):
         """This method is called when confirming edition of a credential"""
-        print "OK PRESSED!"
+
+        #Get edited credential and its possition
+        (cred,pos) = self.centCredEdit.getCredential()
+        #Update it on the list
+        self.cl[pos]=cred
+        #And open list mode
+        self.setListMode()
+
+
 
     def editCancel(self):
         """This method is called when canceled edition of a credential"""
@@ -255,7 +263,7 @@ class Window(QMainWindow):
     def openClicked(self,position):
         #Open the edit form
         self.setEditMode()
-        self.centCredEdit.loadCredential(self.cl[position])
+        self.centCredEdit.loadCredential(self.cl[position],position)
 
 
 
