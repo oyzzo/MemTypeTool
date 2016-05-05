@@ -48,17 +48,8 @@ class Window(QMainWindow):
         #Create Center Layout
         self.centLayout = QVBoxLayout()
         self.centLayout.addWidget(self.menu)
-        #TODO FORM TEST
-        self.centCredList = credList()
-        self.centCredList.newCredential.connect(self.addNewCredential)
-        self.centCredList.deleteClicked.connect(self.deleteClicked)
-        self.centLayout.addWidget(self.centCredList)
-        #self.centCredEdit = credEdit()
-        #self.centLayout.addWidget(self.centCredEdit)
-
-        #self.centCredEdit.okPressed.connect(self.printOk)
-        #self.centCredEdit.cancelPressed.connect(self.printCancel)
-
+        #Credential List on the center
+        self.setListMode()
 
         #Create Main Layout
         self.mainLayout = QVBoxLayout()
@@ -70,12 +61,46 @@ class Window(QMainWindow):
         self.mainWidget.setLayout(self.mainLayout)
         self.setCentralWidget(self.mainWidget)
 
+    def setEditMode(self):
+        """Set window in edit mode"""
+        try:
+            self.centCredList.setParent(None)
+        except AttributeError:
+            pass
+        self.centCredEdit = credEdit()
+        self.centLayout.addWidget(self.centCredEdit)
 
-    def printOk(self):
+        self.centCredEdit.okPressed.connect(self.editOk)
+        self.centCredEdit.cancelPressed.connect(self.editCancel)
+
+
+
+    def setListMode(self):
+        """Set window in  list mode"""
+        try:
+            self.centCredEdit.setParent(None)
+        except AttributeError:
+            pass
+        self.centCredList = credList()
+        self.centCredList.newCredential.connect(self.addNewCredential)
+        self.centCredList.deleteClicked.connect(self.deleteClicked)
+        self.centCredList.openClicked.connect(self.openClicked)
+        self.centLayout.addWidget(self.centCredList)
+
+        #update the credentials on the list
+        for i,cr in enumerate(self.cl):
+            self.centCredList.addCredential(cr.name,i)
+
+
+
+    def editOk(self):
+        """This method is called when confirming edition of a credential"""
         print "OK PRESSED!"
 
-    def printCancel(self):
-        print "CANCEL PRESSED!"
+    def editCancel(self):
+        """This method is called when canceled edition of a credential"""
+        #Nothing to do, return to list mode
+        self.setListMode()
 
     def addNewCredential(self):
         """ Add credential to self.cl"""
@@ -207,7 +232,6 @@ class Window(QMainWindow):
 
 
     def menuClicked(self,button):
-        print "%s CLICKED" %(button)
         #Check what menu button was pressed!
         if(button == "Set Pin"):
             text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
@@ -222,6 +246,19 @@ class Window(QMainWindow):
         elif(button == "Set KeyLayout"):
             self.setKeyboardButton()
 
+    def upClicked(self,position):
+        print "UP %d"%(position)
+
+    def downClicked(self,position):
+        print "DOWN %d"%(position)
+
+    def openClicked(self,position):
+        #Open the edit form
+        self.setEditMode()
+        self.centCredEdit.loadCredential(self.cl[position])
+
+
+
     def deleteClicked(self,position):
         #Delete element from the credential list
         del self.cl[position]
@@ -229,6 +266,7 @@ class Window(QMainWindow):
         self.centCredList.clearCredentials()
         for i,cr in enumerate(self.cl):
             self.centCredList.addCredential(cr.name,i)
+
 
 
 def main():

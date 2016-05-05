@@ -111,6 +111,7 @@ class credList(QWidget):
         self.credential = credItem(crd)
         self.credential.position = pos
         self.credential.deleteClicked.connect(self.deletePress)
+        self.credential.openClicked.connect(self.mousePress)
         self.credLayout.addWidget(self.credential)
         self.credWidget.adjustSize()
 

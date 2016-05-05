@@ -44,8 +44,14 @@ class credEdit(QWidget):
         self.credLayout.addRow(self.crdSubmitLabel,self.crdSubmitEdit)
         self.credLayout.addRow(self.okButton,self.cancelButton)
 
-
-
-
         #Create the main Widget
         self.setLayout(self.credLayout)
+
+    def loadCredential(self,cred):
+        """Method to show credential into the form"""
+
+        self.crdNameEdit.setText(cred.name)
+        self.crdUserEdit.setText(cred.user)
+        self.crdHopEdit.setText(cred.hop)
+        self.crdPassEdit.setText(cred.passw)
+        self.crdSubmitEdit.setText(cred.submit)
