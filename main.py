@@ -8,6 +8,8 @@ from credEditClass import *
 
 from libsmttool.memtype import *
 
+GUI_VERSION = "0.1.1"
+
 class Window(QMainWindow):
     """This class creates a main window"""
 
@@ -48,6 +50,22 @@ class Window(QMainWindow):
         #Create Center Layout
         self.centLayout = QVBoxLayout()
         self.centLayout.addWidget(self.menu)
+
+        #Create console edit box
+        self.consLayout = QVBoxLayout()
+        self.consLayout.setMargin(0)
+        self.consLayout.setSpacing(0)
+
+        self.console = QLineEdit()
+        self.console.setStyleSheet("color: white; background-color: black ;border:none;")
+        self.consLayout.addWidget(self.console)
+
+
+        #Create a status bar
+        self.statBar = QStatusBar()
+        self.statBar.setStyleSheet("color: rgb(127,127,127); background-color: black")
+        self.consLayout.addWidget(self.statBar)
+
         #Credential List on the center
         self.setListMode()
 
@@ -55,11 +73,17 @@ class Window(QMainWindow):
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addWidget(self.topWidget)
         self.mainLayout.addLayout(self.centLayout)
+        self.mainLayout.addLayout(self.consLayout)
+        self.mainLayout.setMargin(0)
 
 
         self.mainWidget = QWidget()
         self.mainWidget.setLayout(self.mainLayout)
         self.setCentralWidget(self.mainWidget)
+
+        #Focus
+        self.console.setFocus()
+        self.statBar.showMessage(GUI_VERSION)
 
     def setEditMode(self):
         """Set window in edit mode"""
@@ -91,6 +115,9 @@ class Window(QMainWindow):
         for i,cr in enumerate(self.cl):
             self.centCredList.addCredential(cr.name,i)
 
+        #Set Focus
+        self.console.setFocus(True)
+
 
 
     def editOk(self):
@@ -102,6 +129,8 @@ class Window(QMainWindow):
         self.cl[pos]=cred
         #And open list mode
         self.setListMode()
+        #Set Focus
+        self.console.setFocus(True)
 
 
 
@@ -109,6 +138,9 @@ class Window(QMainWindow):
         """This method is called when canceled edition of a credential"""
         #Nothing to do, return to list mode
         self.setListMode()
+        #Set Focus
+        self.console.setFocus(True)
+
 
     def addNewCredential(self):
         """ Add credential to self.cl"""
