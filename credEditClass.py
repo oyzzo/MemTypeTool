@@ -19,6 +19,7 @@ class credEdit(QWidget):
 
         #Create credEdit Form Layout
         self.credLayout = QFormLayout()
+        self.mainLayout = QVBoxLayout()
 
         #Add the Credentials attributes
         self.crdNameLabel = QLabel("Name")
@@ -48,8 +49,10 @@ class credEdit(QWidget):
         self.credLayout.addRow(self.crdSubmitLabel,self.crdSubmitEdit)
         self.credLayout.addRow(self.okButton,self.cancelButton)
 
+        self.mainLayout.addLayout(self.credLayout)
+        self.mainLayout.addStretch(1)
         #Create the main Widget
-        self.setLayout(self.credLayout)
+        self.setLayout(self.mainLayout)
 
     def getCredential(self):
         """Method to return the edited credential """
