@@ -8,13 +8,24 @@ MemType Tool - GUI For managing the [MemType Offline password keeper](http://www
 ![screenshot](screenshots/screenshot.png)
 
 
-##Dependencies
-Make sure you have `python` and `PyQt4` installed.
-```
+##Install
+Make sure you have `python`, `pyusb` and `PyQt4` installed.
+
+###Ubuntu
+
 Ubuntu Installation:
+
+```
 apt-get install python
 apt-get install python-pyqt4
+pip install pyusb
 ```
+
+###MacOSX
+Install python and pyqt4 using brew or mac ports. Then install pyusb using pip.
+###Windows
+TODO
+
 ##Running
 To run the **MemTypeTool**:
 
