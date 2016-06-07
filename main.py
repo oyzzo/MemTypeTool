@@ -179,10 +179,15 @@ class Window(QMainWindow):
         if self.isLocked and isDevice:
             isDevice = False
             self.showErrorMessage("Device Locked, unlock it before using!")
-            self.statBr.showMessage("Error, unlock device!")
+            self.statBar.showMessage("Error, unlock device!")
 
         if isDevice:
             self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+            if not self.m.validatePin(str(self.text)):
+                ok = False
+                self.showErrorMessage("Error, wrong PIN!")
+                self.statBar.showMessage("Error, wrong PIN!")
+
         if isDevice and ok:
             self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
             #clean list of credentials
@@ -212,6 +217,11 @@ class Window(QMainWindow):
 
         if isDevice:
             self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+            if not self.m.validatePin(str(self.text)):
+                ok = False
+                self.showErrorMessage("Error, wrong PIN!")
+                self.statBar.showMessage("Error, wrong PIN!")
+
         if isDevice and ok:
             #Write to device
             try:
@@ -248,6 +258,11 @@ class Window(QMainWindow):
 
         if isDevice:
             self.text, ok = QInputDialog.getText(self, 'Enter Old PIN','Enter Old PIN:',mode=QLineEdit.Password)
+            if not self.m.validatePin(str(self.text)):
+                ok = False
+                self.showErrorMessage("Error, wrong PIN!")
+                self.statBar.showMessage("Error, wrong PIN!")
+
             if ok:
                 self.ntext, nok = QInputDialog.getText(self, 'Set New PIN','Set New PIN:',mode=QLineEdit.Password)
                 if nok:
