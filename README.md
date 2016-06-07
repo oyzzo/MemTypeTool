@@ -5,7 +5,7 @@ MemType Tool - GUI For managing the [MemType Offline password keeper](http://www
  - [Get a MemType from Tindie!!](https://www.tindie.com/products/area0x33/memtype-open-source-password-keeper/)
 
 
-![screenshot](screenshot.png)
+![screenshot](screenshots/screenshot.png)
 
 
 ##Dependencies
