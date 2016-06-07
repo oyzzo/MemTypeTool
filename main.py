@@ -214,6 +214,56 @@ class Window(QMainWindow):
             except Exception:
                 self.showErrorMessage("Error writting to device!")
 
+    def setPinButton(self):
+        isDevice = True;
+        self.isLocked = True;
+
+        #Read from device
+        try:
+            self.m = memtype()
+            self.block = self.m.read()
+            self.isLocked = self.m.isLocked()
+            #self.m.disconnect()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+            self.text, ok = QInputDialog.getText(self, 'Enter Old PIN','Enter Old PIN:',mode=QLineEdit.Password)
+            if ok:
+                self.ntext, nok = QInputDialog.getText(self, 'Set New PIN','Set New PIN:',mode=QLineEdit.Password)
+                if nok:
+                    self.vntext, vnok = QInputDialog.getText(self, 'Repeat New PIN','Repeat New PIN:',mode=QLineEdit.Password)
+
+        if isDevice and ok and str(self.ntext)==str(self.vntext):
+            self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
+            #clean list of credentials
+            self.centCredList.clearCredentials()
+            #and add all the credentials to the list
+            for i,cr in enumerate(self.cl):
+                self.centCredList.addCredential(cr.name,i)
+
+            #Change the PIN on the device
+            try:
+               self.m.writePinHash(pinToHash(str(self.ntext)))
+            except Exception:
+                self.showErrorMessage("Error setting the new PIN!!")
+
+
+           #Reencrypt with new PIN and write to device
+            try:
+                block = encryptCredentialList(self.cl, key=pinToKey(str(self.ntext)))
+                self.m.write(block)
+                self.m.disconnect()
+            except Exception:
+                self.showErrorMessage("Error writting encrypted credentials with new PIN!!")
+
+
+
     def setKeyboardButton(self):
         isDevice = True;
         self.isLocked = True;
@@ -284,7 +334,8 @@ class Window(QMainWindow):
     def menuClicked(self,button):
         #Check what menu button was pressed!
         if(button == "Set Pin"):
-            text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
+            #text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
+            self.setPinButton()
         elif(button == "Read"):
             self.readButton()
         elif(button == "Write"):
