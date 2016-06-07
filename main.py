@@ -163,6 +163,8 @@ class Window(QMainWindow):
         isDevice = True;
         self.isLocked = True;
 
+        self.statBar.showMessage("Reading...")
+
         #Read from device
         try:
             self.m = memtype()
@@ -172,10 +174,12 @@ class Window(QMainWindow):
         except Exception:
             isDevice=False
             self.showErrorMessage("MemType device not found!")
+            self.statBar.showMessage("Error Reading!!")
 
         if self.isLocked and isDevice:
             isDevice = False
             self.showErrorMessage("Device Locked, unlock it before using!")
+            self.statBr.showMessage("Error, unlock device!")
 
         if isDevice:
             self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
@@ -186,10 +190,13 @@ class Window(QMainWindow):
             #and add all the credentials to the list
             for i,cr in enumerate(self.cl):
                 self.centCredList.addCredential(cr.name,i)
+                self.statBar.showMessage(GUI_VERSION)
+                self.console.setFocus()
 
     def writeButton(self):
         isDevice = True;
         self.isLocked = True;
+        self.statBar.showMessage("Writting...")
 
         #Check device
         try:
@@ -213,10 +220,17 @@ class Window(QMainWindow):
                 self.m.disconnect()
             except Exception:
                 self.showErrorMessage("Error writting to device!")
+                self.statBar.showMessage("Error writting!!")
+
+            self.statBar.showMessage(GUI_VERSION)
+            self.console.setFocus()
+
 
     def setPinButton(self):
         isDevice = True;
         self.isLocked = True;
+
+        self.statBar.showMessage("Writting PIN...")
 
         #Read from device
         try:
@@ -262,6 +276,8 @@ class Window(QMainWindow):
             except Exception:
                 self.showErrorMessage("Error writting encrypted credentials with new PIN!!")
 
+            self.statBar.showMessage(GUI_VERSION)
+            self.console.setFocus()
 
 
     def setKeyboardButton(self):
