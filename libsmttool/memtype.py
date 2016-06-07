@@ -371,7 +371,8 @@ class deviceInfo:
 
 
 class memtype:
-    def __init__(self, vid=0x1209, pid=0xa033, printDebug=True):
+    def __init__(self, vid=0x1209, pid=0xa033, printDebug=False):
+        #No debug prints by default
         # Initialize with VID and PID
         self.vid = vid
         self.pid = pid
