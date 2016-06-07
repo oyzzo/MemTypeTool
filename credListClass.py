@@ -45,7 +45,10 @@ class credItem(QWidget):
         #Create the Self layout
         self.selfLayout = QVBoxLayout()
         self.selfLayout.addWidget(self.mainWidget)
-        self.setLayout(self.selfLayout)
+        self.mainLayout = QVBoxLayout()
+        self.mainLayout.addLayout(self.selfLayout)
+        self.mainLayout.addStretch(1)
+        self.setLayout(self.mainLayout)
 
     def mousePressEvent(self,event):
         self.openClicked.emit(self.position)
@@ -83,6 +86,7 @@ class credList(QWidget):
 
         #Scroll Area Properties
         self.scroll = QScrollArea()
+        self.scroll.setAlignment(Qt.AlignTop)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll.setWidgetResizable(True)

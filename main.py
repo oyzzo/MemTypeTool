@@ -8,6 +8,8 @@ from credEditClass import *
 
 from libsmttool.memtype import *
 
+GUI_VERSION = "0.2"
+
 class Window(QMainWindow):
     """This class creates a main window"""
 
@@ -48,6 +50,22 @@ class Window(QMainWindow):
         #Create Center Layout
         self.centLayout = QVBoxLayout()
         self.centLayout.addWidget(self.menu)
+
+        #Create console edit box
+        self.consLayout = QVBoxLayout()
+        self.consLayout.setMargin(0)
+        self.consLayout.setSpacing(0)
+
+        self.console = QLineEdit()
+        self.console.setStyleSheet("color: white; background-color: black ;border:none;")
+        self.consLayout.addWidget(self.console)
+
+
+        #Create a status bar
+        self.statBar = QStatusBar()
+        self.statBar.setStyleSheet("color: rgb(127,127,127); background-color: black")
+        self.consLayout.addWidget(self.statBar)
+
         #Credential List on the center
         self.setListMode()
 
@@ -55,11 +73,17 @@ class Window(QMainWindow):
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addWidget(self.topWidget)
         self.mainLayout.addLayout(self.centLayout)
+        self.mainLayout.addLayout(self.consLayout)
+        self.mainLayout.setMargin(0)
 
 
         self.mainWidget = QWidget()
         self.mainWidget.setLayout(self.mainLayout)
         self.setCentralWidget(self.mainWidget)
+
+        #Focus
+        self.console.setFocus()
+        self.statBar.showMessage(GUI_VERSION)
 
     def setEditMode(self):
         """Set window in edit mode"""
@@ -91,6 +115,9 @@ class Window(QMainWindow):
         for i,cr in enumerate(self.cl):
             self.centCredList.addCredential(cr.name,i)
 
+        #Set Focus
+        self.console.setFocus(True)
+
 
 
     def editOk(self):
@@ -102,6 +129,8 @@ class Window(QMainWindow):
         self.cl[pos]=cred
         #And open list mode
         self.setListMode()
+        #Set Focus
+        self.console.setFocus(True)
 
 
 
@@ -109,6 +138,9 @@ class Window(QMainWindow):
         """This method is called when canceled edition of a credential"""
         #Nothing to do, return to list mode
         self.setListMode()
+        #Set Focus
+        self.console.setFocus(True)
+
 
     def addNewCredential(self):
         """ Add credential to self.cl"""
@@ -131,6 +163,8 @@ class Window(QMainWindow):
         isDevice = True;
         self.isLocked = True;
 
+        self.statBar.showMessage("Reading...")
+
         #Read from device
         try:
             self.m = memtype()
@@ -140,13 +174,20 @@ class Window(QMainWindow):
         except Exception:
             isDevice=False
             self.showErrorMessage("MemType device not found!")
+            self.statBar.showMessage("Error Reading!!")
 
         if self.isLocked and isDevice:
             isDevice = False
             self.showErrorMessage("Device Locked, unlock it before using!")
+            self.statBar.showMessage("Error, unlock device!")
 
         if isDevice:
             self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+            if not self.m.validatePin(str(self.text)):
+                ok = False
+                self.showErrorMessage("Error, wrong PIN!")
+                self.statBar.showMessage("Error, wrong PIN!")
+
         if isDevice and ok:
             self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
             #clean list of credentials
@@ -154,10 +195,13 @@ class Window(QMainWindow):
             #and add all the credentials to the list
             for i,cr in enumerate(self.cl):
                 self.centCredList.addCredential(cr.name,i)
+                self.statBar.showMessage(GUI_VERSION)
+                self.console.setFocus()
 
     def writeButton(self):
         isDevice = True;
         self.isLocked = True;
+        self.statBar.showMessage("Writting...")
 
         #Check device
         try:
@@ -173,6 +217,11 @@ class Window(QMainWindow):
 
         if isDevice:
             self.text, ok = QInputDialog.getText(self, 'Enter PIN','Enter PIN:',mode=QLineEdit.Password)
+            if not self.m.validatePin(str(self.text)):
+                ok = False
+                self.showErrorMessage("Error, wrong PIN!")
+                self.statBar.showMessage("Error, wrong PIN!")
+
         if isDevice and ok:
             #Write to device
             try:
@@ -181,6 +230,70 @@ class Window(QMainWindow):
                 self.m.disconnect()
             except Exception:
                 self.showErrorMessage("Error writting to device!")
+                self.statBar.showMessage("Error writting!!")
+
+            self.statBar.showMessage(GUI_VERSION)
+            self.console.setFocus()
+
+
+    def setPinButton(self):
+        isDevice = True;
+        self.isLocked = True;
+
+        self.statBar.showMessage("Writting PIN...")
+
+        #Read from device
+        try:
+            self.m = memtype()
+            self.block = self.m.read()
+            self.isLocked = self.m.isLocked()
+            #self.m.disconnect()
+        except Exception:
+            isDevice=False
+            self.showErrorMessage("MemType device not found!")
+
+        if self.isLocked and isDevice:
+            isDevice = False
+            self.showErrorMessage("Device Locked, unlock it before using!")
+
+        if isDevice:
+            self.text, ok = QInputDialog.getText(self, 'Enter Old PIN','Enter Old PIN:',mode=QLineEdit.Password)
+            if not self.m.validatePin(str(self.text)):
+                ok = False
+                self.showErrorMessage("Error, wrong PIN!")
+                self.statBar.showMessage("Error, wrong PIN!")
+
+            if ok:
+                self.ntext, nok = QInputDialog.getText(self, 'Set New PIN','Set New PIN:',mode=QLineEdit.Password)
+                if nok:
+                    self.vntext, vnok = QInputDialog.getText(self, 'Repeat New PIN','Repeat New PIN:',mode=QLineEdit.Password)
+
+        if isDevice and ok and str(self.ntext)==str(self.vntext):
+            self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
+            #clean list of credentials
+            self.centCredList.clearCredentials()
+            #and add all the credentials to the list
+            for i,cr in enumerate(self.cl):
+                self.centCredList.addCredential(cr.name,i)
+
+            #Change the PIN on the device
+            try:
+               self.m.writePinHash(pinToHash(str(self.ntext)))
+            except Exception:
+                self.showErrorMessage("Error setting the new PIN!!")
+
+
+           #Reencrypt with new PIN and write to device
+            try:
+                block = encryptCredentialList(self.cl, key=pinToKey(str(self.ntext)))
+                self.m.write(block)
+                self.m.disconnect()
+            except Exception:
+                self.showErrorMessage("Error writting encrypted credentials with new PIN!!")
+
+            self.statBar.showMessage(GUI_VERSION)
+            self.console.setFocus()
+
 
     def setKeyboardButton(self):
         isDevice = True;
@@ -235,11 +348,11 @@ class Window(QMainWindow):
                 self.cl = []
                 for cred in tl:
                     newCred = credential()
-                    newCred.name = cred['name']
-                    newCred.user = cred['user']
-                    newCred.hop = cred['hop']
-                    newCred.passw = cred['passw']
-                    newCred.submit = cred['submit']
+                    newCred.name = str(cred['name'])
+                    newCred.user = str(cred['user'])
+                    newCred.hop = str(cred['hop'])
+                    newCred.passw = str(cred['passw'])
+                    newCred.submit = str(cred['submit'])
                     self.cl.append(newCred)
 
             #clean list of credentials
@@ -252,7 +365,8 @@ class Window(QMainWindow):
     def menuClicked(self,button):
         #Check what menu button was pressed!
         if(button == "Set Pin"):
-            text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
+            #text, ok = QInputDialog.getText(self, 'Set new PIN','Enter new PIN:')
+            self.setPinButton()
         elif(button == "Read"):
             self.readButton()
         elif(button == "Write"):
