@@ -1,10 +1,29 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+
 class leftMenu(QWidget):
     """This class creates the main menu"""
 
     menuClicked = pyqtSignal(str)
+
+    def translateText(self,txt):
+        retStr = QString()
+        if txt == "Read":
+            retStr = QCoreApplication.translate("read", "Read")
+        elif txt == "Write":
+            retStr = QCoreApplication.translate("write", "Write")
+        elif txt == "Set PIN":
+            retStr = QCoreApplication.translate("setpin", "Set PIN")
+        elif txt == "Import File":
+            retStr = QCoreApplication.translate("import", "Import File")
+        elif txt == "Export File":
+            retStr = QCoreApplication.translate("export", "Export File")
+        elif txt == "Set KeyLayout":
+            retStr = QCoreApplication.translate("setkeylayout", "Set KeyLayout")
+
+
+        return retStr
 
     #Constructor
     def __init__(self,buttonList):
@@ -15,7 +34,7 @@ class leftMenu(QWidget):
         #Add buttons to the layout
         for btn in buttonList:
             self.button = QToolButton()
-            self.button.setText(btn[0])
+            self.button.setText(self.translateText(btn[0]))
             self.button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
             self.button.setIcon(QIcon(btn[1]))
             myCallable = getattr(self,btn[0].replace(' ','_')+"Clicked")

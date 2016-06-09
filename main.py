@@ -374,6 +374,12 @@ def main():
     #Create new application
     mttool = QApplication(sys.argv)
     #Create new instance of main window
+
+    #Locale
+    translator = QTranslator()
+    translator.load(QLocale.system().name() + '.qm', 'translate')
+    mttool.installTranslator(translator)
+
     mtWindow = Window()
     mtWindow.show() #Make instance visible
     mtWindow.raise_() #Raise instance to top of window stack
