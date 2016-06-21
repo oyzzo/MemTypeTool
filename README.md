@@ -23,8 +23,26 @@ pip install pyusb
 
 ###MacOSX
 Install python and pyqt4 using brew or mac ports. Then install pyusb using pip.
+
 ###Windows
-TODO
+Install Python 2.7:
+`https://www.python.org/downloads/`
+Add python to your PATH:
+`C:\Python27\;C:\Python27\Scripts\`
+Download and Install PyQt4 (Py2.7):
+`https://riverbankcomputing.com/software/pyqt/download`
+Download, unzip and isntall pyusb:
+`https://github.com/walac/pyusb/archive/master.zip`
+`python setup.py install`
+Plug in the Memtype and let windows install the drivers for the device (we'll change them in the next step).
+Download zadig:
+`http://zadig.akeo.ie/`
+Find Memtype on zadig (may need to activate Option/List all devices) and change driver to libusb-win32:
+
+Done!!! Run the MemTypeTool GUI:
+`python main.py`
+
+
 
 ##Running
 To run the **MemTypeTool**:
