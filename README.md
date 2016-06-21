@@ -25,23 +25,24 @@ pip install pyusb
 Install python and pyqt4 using brew or mac ports. Then install pyusb using pip.
 
 ###Windows
-Install Python 2.7:
+1) Install Python 2.7:
 `https://www.python.org/downloads/`
-Add python to your PATH:
+2) Add python to your PATH:
 `C:\Python27\;C:\Python27\Scripts\`
-Download and Install PyQt4 (Py2.7):
+3) Download and Install PyQt4 (Py2.7):
 `https://riverbankcomputing.com/software/pyqt/download`
-Download, unzip and isntall pyusb:
+4) Download, unzip and isntall pyusb:
 `https://github.com/walac/pyusb/archive/master.zip`
 `python setup.py install`
-Plug in the Memtype and let windows install the drivers for the device (we'll change them in the next step).
-Download zadig:
+5)Plug in the Memtype and let windows install the drivers for the device (we'll change them in the next step).
+6)Download and Run zadig:
 `http://zadig.akeo.ie/`
 Find Memtype on zadig (may need to activate Option/List all devices) and change driver to libusb-win32:
-
-Done!!! Run the MemTypeTool GUI:
+7)Done!!! Run the MemTypeTool GUI:
 `python main.py`
 
+If you want to use it as a keyboard again, go to the Device Manager and delete drivers on it.
+It will install windows drivers. Next time you want to read or write from it you'll need to repeat steps 6 and 7 ;)
 
 
 ##Running
