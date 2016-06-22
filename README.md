@@ -26,23 +26,37 @@ Install python and pyqt4 using brew or mac ports. Then install pyusb using pip.
 
 ###Windows
 1) Install Python 2.7:
+
 `https://www.python.org/downloads/`
+
 2) Add python to your PATH:
 `C:\Python27\;C:\Python27\Scripts\`
+
 3) Download and Install PyQt4 (Py2.7):
 `https://riverbankcomputing.com/software/pyqt/download`
+
 4) Download, unzip and isntall pyusb:
 `https://github.com/walac/pyusb/archive/master.zip`
+
 `python setup.py install`
+
 5)Plug in the Memtype and let windows install the drivers for the device (we'll change them in the next step).
+
 6)Download and extract libusb-win32:
 `http://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/libusb-win32-bin-1.2.6.0.zip/download`
+
 7) Execute install-filter-win (find it inside extracted folder, under /bin/x86 or other if your windows is 64bits)
- -Select Install Filter, next.
+
+-Select Install Filter, next.
+
 ![screenshot](screenshots/install-filter-win-1.png)
- -Select Memtype (pid a033) and click Install
+
+-Select Memtype (pid a033) and click Install
+
 ![screenshot](screenshots/install-filter-win-2.png)
+
 8)Done!!! you can check it with the testlibusb-win found next to install-filter-win:
+
 ![screenshot](screenshots/testlibusb-win.png)
 
 ##Running
