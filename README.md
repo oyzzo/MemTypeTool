@@ -35,15 +35,15 @@ Install python and pyqt4 using brew or mac ports. Then install pyusb using pip.
 `https://github.com/walac/pyusb/archive/master.zip`
 `python setup.py install`
 5)Plug in the Memtype and let windows install the drivers for the device (we'll change them in the next step).
-6)Download and Run zadig:
-`http://zadig.akeo.ie/`
-Find Memtype on zadig (may need to activate Option/List all devices) and change driver to libusb-win32:
-7)Done!!! Run the MemTypeTool GUI:
-`python main.py`
-
-If you want to use it as a keyboard again, go to the Device Manager and delete drivers on it.
-It will install windows drivers. Next time you want to read or write from it you'll need to repeat steps 6 and 7 ;)
-
+6)Download and extract libusb-win32:
+`http://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/libusb-win32-bin-1.2.6.0.zip/download`
+7) Execute install-filter-win (find it inside extracted folder, under /bin/x86 or other if your windows is 64bits)
+ -Select Install Filter, next.
+![screenshot](screenshots/install-filter-win-1.png)
+ -Select Memtype (pid a033) and click Install
+![screenshot](screenshots/install-filter-win-2.png)
+8)Done!!! you can check it with the testlibusb-win found next to install-filter-win:
+![screenshot](screenshots/testlibusb-win.png)
 
 ##Running
 To run the **MemTypeTool**:
