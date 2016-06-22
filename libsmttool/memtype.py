@@ -172,8 +172,8 @@ def decryptCredentialList(cb=[], key=[0, 0, 0, 0]):
             blockEnd = 0
 
     # Print Credential List, only for debug
-    for cr in credList:
-        print cr
+    #for cr in credList:
+    #    print cr
 
     return credList
 
@@ -382,7 +382,7 @@ class memtype:
 
     def connect(self):
         # connect
-        self.dev = findHIDDevice(self.vid, self.pid, True)
+        self.dev = findHIDDevice(self.vid, self.pid, self.printDebug)
         if self.dev is None:
             if self.printDebug: print "ERR findHIDDevice"
             return -1

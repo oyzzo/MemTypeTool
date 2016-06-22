@@ -8,7 +8,7 @@ from credEditClass import *
 
 from libsmttool.memtype import *
 
-GUI_VERSION = "0.2"
+GUI_VERSION = "0.3"
 
 class Window(QMainWindow):
     """This class creates a main window"""
@@ -405,6 +405,12 @@ def main():
     #Create new application
     mttool = QApplication(sys.argv)
     #Create new instance of main window
+
+    #Locale
+    translator = QTranslator()
+    translator.load(QLocale.system().name() + '.qm', 'translate')
+    mttool.installTranslator(translator)
+
     mtWindow = Window()
     mtWindow.show() #Make instance visible
     mtWindow.raise_() #Raise instance to top of window stack
