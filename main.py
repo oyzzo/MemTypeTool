@@ -271,17 +271,10 @@ class Window(QMainWindow):
         if isDevice and ok and str(self.ntext)==str(self.vntext):
             self.cl = decryptCredentialList(self.block, key=pinToKey(str(self.text)))
             #clean list of credentials
-            self.centCredList.clearCredentials()
+            #~self.centCredList.clearCredentials()
             #and add all the credentials to the list
-            for i,cr in enumerate(self.cl):
-                self.centCredList.addCredential(cr.name,i)
-
-            #Change the PIN on the device
-            try:
-               self.m.writePinHash(pinToHash(str(self.ntext)))
-            except Exception:
-                self.showErrorMessage("Error setting the new PIN!!")
-
+            #~for i,cr in enumerate(self.cl):
+            #~    self.centCredList.addCredential(cr.name,i)
 
            #Reencrypt with new PIN and write to device
             try:
@@ -290,6 +283,14 @@ class Window(QMainWindow):
                 self.m.disconnect()
             except Exception:
                 self.showErrorMessage("Error writting encrypted credentials with new PIN!!")
+
+            #Change the PIN on the device (the last thing to do!!)
+            try:
+               self.m.writePinHash(pinToHash(str(self.ntext)))
+            except Exception:
+                self.showErrorMessage("Error setting the new PIN!!")
+
+
 
             self.statBar.showMessage(GUI_VERSION)
             self.console.setFocus()
