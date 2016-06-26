@@ -68,6 +68,9 @@ Output: memtype pin to key format
 def pinToKey(pinStr=""):
     key = [0, 0, 0, 0]
     pin = 0000
+    # Pin 1234 is shown in the device as 4321
+    # so pin string needs to be reversed
+    pinStr = pinStr[::-1]
 
     if (len(pinStr) != 4):
         print "ERR pin length"
@@ -92,12 +95,8 @@ Input: pin in string format "0000" to "9999" 4 digits
 Output: memtype pin in Hash Format
 """
 def pinToHash(pinStr=""):
-
-    # Pin 1234 is shown in the device as 4321
-    # so pin string needs to be reversed
-    pStr = pinStr[::-1]
-    key1 = pinToKey(pStr)
-    key2 = pinToKey(pStr)
+    key1 = pinToKey(pinStr)
+    key2 = pinToKey(pinStr)
     return ungroup32to8(NoekeonEncrypt(key1, key2))
 
 
@@ -605,10 +604,12 @@ if __name__ == '__main__':
     m = memtype()
     m.info()
     block = m.read()
-    cl = decryptCredentialList(block, key=pinToKey("0000"))
+    cl = decryptCredentialList(block, key=pinToKey("1234"))
     for i in range(len(cl)):
+        print cl[i]
         cl[i].name = "credName%d" % i
-    block = encryptCredentialList(cl, key=pinToKey("0000"))
-    m.write(block)
+    block = encryptCredentialList(cl, key=pinToKey("1234"))
+    #m.write(block)
+    #m.writePinHash(pinToHash("1234"))
     m.disconnect()
 
