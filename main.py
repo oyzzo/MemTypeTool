@@ -1,6 +1,6 @@
 import sys
 import json
-import os, random, struct
+import os, random, struct, hashlib
 from Crypto.Cipher import AES
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -342,7 +342,7 @@ class Window(QMainWindow):
 
                 if ok and filepass !="":
                     iv = ''.join(chr(random.randint(0,0xFF)) for i in range(16))
-                    encryptor = AES.new(str(filepass),AES.MODE_CBC,iv)
+                    encryptor = AES.new(hashlib.md5(filepass).hexdigest(),AES.MODE_CBC,iv)
 
                     with open(str(outFileName),'wb') as outfile:
                         text=json.dumps(tl)
