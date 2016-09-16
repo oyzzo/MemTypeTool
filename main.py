@@ -1,5 +1,7 @@
 import sys
 import json
+import os, random, struct
+from Crypto.Cipher import AES
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from leftMenuClass import *
@@ -336,9 +338,18 @@ class Window(QMainWindow):
                 cd['passw'] = c.passw
                 cd['submit'] = c.submit
                 tl.append(cd)
+                filepass, ok = QInputDialog.getText(self, 'File encryption pssword','Enter the file encryption password:',mode=QLineEdit.Password)
 
-            with open(str(outFileName),'wb') as outfile:
-                json.dump(tl,outfile)
+                if ok and filepass !="":
+                    iv = ''.join(chr(random.randint(0,0xFF)) for i in range(16))
+                    encryptor = AES.new(str(filepass),AES.MODE_CBC,iv)
+
+                    with open(str(outFileName),'wb') as outfile:
+                        text=json.dumps(tl)
+                        if len(text) % 16 != 0:
+                            text += ' ' * (16 - len(text) % 16)
+                        outfile.write(iv)
+                        outfile.write(encryptor.encrypt(text))
 
     def importFileButton(self):
         inFileName = QFileDialog.getOpenFileName(self, 'Import File','./')
