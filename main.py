@@ -353,9 +353,15 @@ class Window(QMainWindow):
 
     def importFileButton(self):
         inFileName = QFileDialog.getOpenFileName(self, 'Import File','./')
-        if str(inFileName) != "":
+        filepass, ok = QInputDialog.getText(self, 'File encryption pssword','Enter the file encryption password:',mode=QLineEdit.Password)
+
+        if str(inFileName) != "" and filepass != "" and ok:
+
             with open(str(inFileName),'rb') as infile:
-                tl = json.load(infile)
+                iv = infile.read(16)
+                decryptor = AES.new(hashlib.md5(filepass).hexdigest(), AES.MODE_CBC,iv)
+                text = decryptor.decrypt(infile.read())
+                tl = json.loads(text)
                 #Clean credential list
                 self.cl = []
                 for cred in tl:
