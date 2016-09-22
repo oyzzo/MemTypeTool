@@ -338,18 +338,19 @@ class Window(QMainWindow):
                 cd['passw'] = c.passw
                 cd['submit'] = c.submit
                 tl.append(cd)
-                filepass, ok = QInputDialog.getText(self, 'File encryption pssword','Enter the file encryption password:',mode=QLineEdit.Password)
+            filepass, ok = QInputDialog.getText(self, 'File encryption pssword','Enter the file encryption password:',mode=QLineEdit.Password)
+            filepass2, ok2 = QInputDialog.getText(self, 'File encryption pssword','Repeat the file encryption password:',mode=QLineEdit.Password)
 
-                if ok and filepass !="":
-                    iv = ''.join(chr(random.randint(0,0xFF)) for i in range(16))
-                    encryptor = AES.new(hashlib.md5(filepass).hexdigest(),AES.MODE_CBC,iv)
+            if ok and ok2 and filepass !="" and filepass2 != "" and filepass == filepass2 :
+                iv = ''.join(chr(random.randint(0,0xFF)) for i in range(16))
+                encryptor = AES.new(hashlib.md5(filepass).hexdigest(),AES.MODE_CBC,iv)
 
-                    with open(str(outFileName),'wb') as outfile:
-                        text=json.dumps(tl)
-                        if len(text) % 16 != 0:
-                            text += ' ' * (16 - len(text) % 16)
-                        outfile.write(iv)
-                        outfile.write(encryptor.encrypt(text))
+                with open(str(outFileName),'wb') as outfile:
+                    text=json.dumps(tl)
+                    if len(text) % 16 != 0:
+                        text += ' ' * (16 - len(text) % 16)
+                    outfile.write(iv)
+                    outfile.write(encryptor.encrypt(text))
 
     def importFileButton(self):
         inFileName = QFileDialog.getOpenFileName(self, 'Import File','./')
