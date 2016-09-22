@@ -362,17 +362,21 @@ class Window(QMainWindow):
                 iv = infile.read(16)
                 decryptor = AES.new(hashlib.md5(filepass).hexdigest(), AES.MODE_CBC,iv)
                 text = decryptor.decrypt(infile.read())
-                tl = json.loads(text)
-                #Clean credential list
-                self.cl = []
-                for cred in tl:
-                    newCred = credential()
-                    newCred.name = str(cred['name'])
-                    newCred.user = str(cred['user'])
-                    newCred.hop = str(cred['hop'])
-                    newCred.passw = str(cred['passw'])
-                    newCred.submit = str(cred['submit'])
-                    self.cl.append(newCred)
+                try:
+                    tl = json.loads(text)
+                except ValueError:
+                    self.showErrorMessage("Wrong Password!") 
+                else:
+                    #Clean credential list
+                    self.cl = []
+                    for cred in tl:
+                        newCred = credential()
+                        newCred.name = str(cred['name'])
+                        newCred.user = str(cred['user'])
+                        newCred.hop = str(cred['hop'])
+                        newCred.passw = str(cred['passw'])
+                        newCred.submit = str(cred['submit'])
+                        self.cl.append(newCred)
 
             #clean list of credentials
             self.centCredList.clearCredentials()
