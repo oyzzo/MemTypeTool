@@ -1,5 +1,7 @@
 import sys
 import json
+import os, random, struct, hashlib
+from Crypto.Cipher import AES
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from leftMenuClass import *
@@ -8,7 +10,7 @@ from credEditClass import *
 
 from libsmttool.memtype import *
 
-GUI_VERSION = "0.4"
+GUI_VERSION = "0.5"
 
 class Window(QMainWindow):
     """This class creates a main window"""
@@ -336,25 +338,45 @@ class Window(QMainWindow):
                 cd['passw'] = c.passw
                 cd['submit'] = c.submit
                 tl.append(cd)
+            filepass, ok = QInputDialog.getText(self, 'File encryption pssword','Enter the file encryption password:',mode=QLineEdit.Password)
+            filepass2, ok2 = QInputDialog.getText(self, 'File encryption pssword','Repeat the file encryption password:',mode=QLineEdit.Password)
 
-            with open(str(outFileName),'wb') as outfile:
-                json.dump(tl,outfile)
+            if ok and ok2 and filepass !="" and filepass2 != "" and filepass == filepass2 :
+                iv = ''.join(chr(random.randint(0,0xFF)) for i in range(16))
+                encryptor = AES.new(hashlib.md5(filepass).hexdigest(),AES.MODE_CBC,iv)
+
+                with open(str(outFileName),'wb') as outfile:
+                    text=json.dumps(tl)
+                    if len(text) % 16 != 0:
+                        text += ' ' * (16 - len(text) % 16)
+                    outfile.write(iv)
+                    outfile.write(encryptor.encrypt(text))
 
     def importFileButton(self):
         inFileName = QFileDialog.getOpenFileName(self, 'Import File','./')
-        if str(inFileName) != "":
+        filepass, ok = QInputDialog.getText(self, 'File encryption pssword','Enter the file encryption password:',mode=QLineEdit.Password)
+
+        if str(inFileName) != "" and filepass != "" and ok:
+
             with open(str(inFileName),'rb') as infile:
-                tl = json.load(infile)
-                #Clean credential list
-                self.cl = []
-                for cred in tl:
-                    newCred = credential()
-                    newCred.name = str(cred['name'])
-                    newCred.user = str(cred['user'])
-                    newCred.hop = str(cred['hop'])
-                    newCred.passw = str(cred['passw'])
-                    newCred.submit = str(cred['submit'])
-                    self.cl.append(newCred)
+                iv = infile.read(16)
+                decryptor = AES.new(hashlib.md5(filepass).hexdigest(), AES.MODE_CBC,iv)
+                text = decryptor.decrypt(infile.read())
+                try:
+                    tl = json.loads(text)
+                except ValueError:
+                    self.showErrorMessage("Wrong Password!") 
+                else:
+                    #Clean credential list
+                    self.cl = []
+                    for cred in tl:
+                        newCred = credential()
+                        newCred.name = str(cred['name'])
+                        newCred.user = str(cred['user'])
+                        newCred.hop = str(cred['hop'])
+                        newCred.passw = str(cred['passw'])
+                        newCred.submit = str(cred['submit'])
+                        self.cl.append(newCred)
 
             #clean list of credentials
             self.centCredList.clearCredentials()
