@@ -10,7 +10,7 @@ from credEditClass import *
 
 from libsmttool.memtype import *
 
-GUI_VERSION = "0.4"
+GUI_VERSION = "0.5"
 
 class Window(QMainWindow):
     """This class creates a main window"""
