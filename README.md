@@ -6,21 +6,26 @@ MemType Tool - New GUI For managing the [MemType Offline password keeper](http:/
 
 
 
-##Install
+## Install
 TODO
-###Ubuntu
+
+### Ubuntu
 TODO
-###MacOSX
+
+### MacOSX
 TODO
-###Windows
+
+### Windows
 TODO
-##Running
+
+## Running
 Click on the Icon
-##Keyboards
+
+## Keyboards
 Using the GUI you can change the MemType keyboard layout to match your computer keyboard layout.
 The current available layouts files are located under `keyboard` directory.
 
-##About
+## About
 
 * Miguel Angel Borrego
 * Noel Carriquí
