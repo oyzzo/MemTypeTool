@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "credentialwidget.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -18,6 +17,15 @@ MainWindow::MainWindow(QWidget *parent) :
     //The add credential button
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::addCredential);
 
+    //The Load Keyboard Layout button
+    connect(ui->actionSet_KeyLayout, &QAction::triggered, this, &MainWindow::loadLayout);
+
+    //The export creedentials button
+    connect(ui->actionExport_File, &QAction::triggered, this, &MainWindow::exportCredentials);
+
+    //The iport credentials button
+    connect(ui->actionImport_File, &QAction::triggered, this, &MainWindow::importCredentials);
+
 }
 
 MainWindow::~MainWindow()
@@ -31,6 +39,36 @@ MainWindow::~MainWindow()
 
     if (this->credWindow) {
         delete credWindow;
+    }
+}
+
+// Load Keyboard Layout
+void MainWindow::loadLayout()
+{
+    QString filename = QFileDialog::getOpenFileName(this);
+
+    if (!filename.isEmpty()) {
+        qDebug() << filename;
+    }
+}
+
+// Import credentials file
+void MainWindow::importCredentials()
+{
+    QString filename = QFileDialog::getOpenFileName(this);
+
+    if (!filename.isEmpty()) {
+        qDebug() << filename;
+    }
+}
+
+// Export Credentials file
+void MainWindow::exportCredentials()
+{
+    QString filename = QFileDialog::getSaveFileName(this);
+
+    if (!filename.isEmpty()) {
+        qDebug() << filename;
     }
 }
 
@@ -57,10 +95,11 @@ void MainWindow::deleteCredential(Credential* credential)
 // This function opens the credential editor window
 void MainWindow::editCredential(Credential* credential)
 {
-    this->credWindow = new CredentialEditWindow();
-
-    //Update screen to show up modifications (if there are any)
-    connect(credWindow, &CredentialEditWindow::accepted, this, &MainWindow::renderCredentials);
+    if (!this->credWindow) {
+        this->credWindow = new CredentialEditWindow();
+        //Update screen to show up modifications (if there are any)
+        connect(credWindow, &CredentialEditWindow::accepted, this, &MainWindow::renderCredentials);
+    }
 
     credWindow->setCredential(credential);
     credWindow->show();

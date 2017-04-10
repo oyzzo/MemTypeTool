@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QString>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -35,6 +36,9 @@ private:
     void editCredential(Credential *credential);
     void moveUpCredential(Credential *credential);
     void moveDownCredential(Credential *credential);
+    void loadLayout();
+    void exportCredentials();
+    void importCredentials();
 };
 
 #endif // MAINWINDOW_H
