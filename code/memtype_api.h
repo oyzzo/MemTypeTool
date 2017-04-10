@@ -5,29 +5,29 @@
 #include <stdio.h>
 
 typedef enum {
-	NO_ERROR,
-	ERROR
+    NO_ERROR,
+    ERROR
 } memtype_ret_t;
 
 typedef enum {
-	NOT_LOCKED,
-	LOCKED
+    NOT_LOCKED,
+    LOCKED
 } memtype_locked_t;
 
 typedef struct credential {
-	char *name;
-	char *user;
-	char *hop;
-	char *pass;
-	char *submit;
+    char *name;
+    char *user;
+    char *hop;
+    char *pass;
+    char *submit;
 } credential_t;
 
 /** Device Info */
 typedef struct device_info {
-	uint8_t major;
-	uint8_t minor;
-	uint8_t patch;
-	uint16_t credSize;
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+    uint16_t credSize;
 } device_info_t;
 
 /** Function Prototype Declaration */
@@ -63,4 +63,32 @@ memtype_ret_t Memtype_encrypt(credential_t * list, uint16_t len, uint8_t * buff,
  */
 memtype_ret_t Memtype_decrypt(credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin);
 
-#endif				/* MEMTYPE_API_H */
+/**
+ * Computes the size of the buffer needed for credential list encryption
+ * Usefull to be used within malloc function
+ * Credential Storage format:
+ * [name, offset,[Encrypted: user,hop,pass,submit]
+ * @param [in] list - list of credentials
+ * @param [in] len - number of credentials 
+ * @return size of the buffer needed to encrypt the list of credentials
+ */
+uint16_t Memtype_credBuffSize(credential_t * list, uint16_t len);
+
+/**
+ * Computes the number of credentials in a encrypted buffer
+ * Usefull to be used within malloc function
+ * [name, offset,[Encrypted: user,hop,pass,submit]
+ * @param [in] buff - Encrypted buffer
+ * @param [in] size - Buffer size
+ * @return The number of credentials in the buffer
+ */
+uint16_t Memtype_credLen(uint8_t * buff, uint16_t size);
+
+/** 
+ * Computes the hash for the memtype 
+ * @param [in] pin - Pin from 0 to 9999
+ * @param [out] hash - Computed hash from the incoming pin
+ */
+void Memtype_pinToHash(uint16_t pin, uint8_t hash[16]);
+
+#endif                          /* MEMTYPE_API_H */
