@@ -27,12 +27,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     credential.cpp \
     credentialwidget.cpp \
-    credentialeditwindow.cpp
+    credentialeditwindow.cpp \
+    noekeon.c \
+    memtype.c
 
 HEADERS  += mainwindow.h \
-    credential.h \
     credentialwidget.h \
-    credentialeditwindow.h
+    credentialeditwindow.h \
+    credential.h \
+    noekeon_api.h \
+    memtype_api.h
 
 FORMS    += mainwindow.ui \
     credentialwidget.ui \
@@ -40,3 +44,6 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resources.qrc
+
+INCLUDEPATH += /usr/include/libusb-1.0
+LIBS += -lusb-1.0

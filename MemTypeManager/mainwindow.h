@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "credential.h"
 #include "credentialwidget.h"
+#include "credential.h"
 #include "credentialeditwindow.h"
 #include <QApplication>
 #include <QDebug>
@@ -29,7 +29,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    QVector<Credential*> mCredentials;
+    QVector<Credential *> mCredentials;
     CredentialEditWindow* credWindow;
 
     void renderCredentials();
