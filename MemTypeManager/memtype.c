@@ -406,7 +406,7 @@ memtype_ret_t Memtype_isLocked(memtype_locked_t * lock)
 
     /* Send CMD */
     ret = memtype_send(msg, &len);
-
+    return ret;
     if ((lock != NULL)) {
         *lock = (msg[1] == 0xF6) ? (LOCKED) : (NOT_LOCKED);
     } else {

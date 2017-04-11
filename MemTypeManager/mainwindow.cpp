@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -23,8 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //The export creedentials button
     connect(ui->actionExport_File, &QAction::triggered, this, &MainWindow::exportCredentials);
 
-    //The iport credentials button
+    //The import credentials button
     connect(ui->actionImport_File, &QAction::triggered, this, &MainWindow::importCredentials);
+
+    //The read credentials button
+    connect(ui->actionRead, &QAction::triggered, this, &MainWindow::memtypeLocked);
 
 }
 
@@ -148,4 +152,25 @@ void MainWindow::renderCredentials()
         credWidget->cred = t;
         this->ui->scrollLayout->addWidget(credWidget);
     }
+}
+
+bool MainWindow::memtypeLocked()
+{
+    Memtype_init();
+
+    Memtype_connect();
+
+    memtype_locked_t lock;
+
+    if (Memtype_isLocked(&lock) == NO_ERROR) {
+        if (lock == LOCKED) {
+            qDebug() << "LOCKED!";
+        } else {
+            qDebug() << "UUUUUUUUNNNNN LOCKEEEEDDDD!!!";
+        }
+    }
+
+    return lock == LOCKED;
+
+    Memtype_disconnect();
 }

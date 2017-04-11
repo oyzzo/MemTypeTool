@@ -5,6 +5,8 @@
 #include "credentialwidget.h"
 #include "credential.h"
 #include "credentialeditwindow.h"
+#include "memtype_api.h"
+#include "noekeon_api.h"
 #include <QApplication>
 #include <QDebug>
 #include <QLabel>
@@ -39,6 +41,7 @@ private:
     void loadLayout();
     void exportCredentials();
     void importCredentials();
+    bool memtypeLocked();
 };
 
 #endif // MAINWINDOW_H
