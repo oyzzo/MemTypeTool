@@ -7,4 +7,21 @@ Credential::Credential()
     this->hop = "\\t";
     this->password = "";
     this->submit = "\\n";
+    this->fits = false;
+}
+
+int Credential::Size()
+{
+    int size;
+
+    credential_t cred;
+    cred.name = (char*)this->name.c_str();
+    cred.user = (char*)this->user.c_str();
+    cred.hop = (char*)this->hop.c_str();
+    cred.pass = (char*)this->password.c_str();
+    cred.submit = (char*)this->submit.c_str();
+
+    size = Memtype_credBuffSize(&cred, 1);
+
+    return size;
 }

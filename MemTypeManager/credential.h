@@ -2,6 +2,7 @@
 #define CREDENTIAL_H
 
 #include <string>
+#include "memtype_api.h"
 
 using namespace std;
 
@@ -14,8 +15,10 @@ public:
     string hop;
     string password;
     string submit;
+    bool fits; // Is the credential writted into device?
 
     Credential();
+    int Size();
 };
 
 #endif // CREDENTIAL_H

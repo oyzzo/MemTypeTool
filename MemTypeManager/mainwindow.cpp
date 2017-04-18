@@ -82,7 +82,6 @@ void MainWindow::addCredential()
     auto cred = new Credential();
     cred->name = "New Credential";
     this->mCredentials.append(cred);
-    this->ui->progressBar->setValue(this->ui->progressBar->value()+1);
     this->renderCredentials();
 }
 
@@ -91,7 +90,6 @@ void MainWindow::deleteCredential(Credential* credential)
 {
     if (this->mCredentials.contains(credential)) {
         this->mCredentials.remove(this->mCredentials.indexOf(credential));
-        this->ui->progressBar->setValue(this->ui->progressBar->value()-1);
         this->renderCredentials();
     }
 }
@@ -135,6 +133,8 @@ void MainWindow::moveDownCredential(Credential* credential)
 
 void MainWindow::renderCredentials()
 {
+    int size = 0;
+
     while (!this->ui->scrollLayout->isEmpty()){
         QWidget* w = this->ui->scrollLayout->itemAt(0)->widget();
         w->setVisible(false);
@@ -143,6 +143,7 @@ void MainWindow::renderCredentials()
 
     for (auto t : this->mCredentials) {
         auto credWidget = new credentialWidget();
+        size += t->Size();
         connect(credWidget, &credentialWidget::deleteCredential, this, &MainWindow::deleteCredential);
         connect(credWidget, &credentialWidget::editCredential, this, &MainWindow::editCredential);
         connect(credWidget, &credentialWidget::upCredential, this, &MainWindow::moveUpCredential);
@@ -152,12 +153,12 @@ void MainWindow::renderCredentials()
         credWidget->cred = t;
         this->ui->scrollLayout->addWidget(credWidget);
     }
+
+    this->ui->progressBar->setValue(size);
 }
 
 bool MainWindow::memtypeLocked()
 {
-    Memtype_init();
-
     Memtype_connect();
 
     memtype_locked_t lock;
@@ -170,7 +171,7 @@ bool MainWindow::memtypeLocked()
         }
     }
 
-    return lock == LOCKED;
-
     Memtype_disconnect();
+
+    return lock == LOCKED;
 }

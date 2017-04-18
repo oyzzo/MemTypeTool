@@ -29,14 +29,16 @@ SOURCES += main.cpp\
     credentialwidget.cpp \
     credentialeditwindow.cpp \
     noekeon.c \
-    memtype.c
+    memtype.c \
+    device.cpp
 
 HEADERS  += mainwindow.h \
     credentialwidget.h \
     credentialeditwindow.h \
     credential.h \
     noekeon_api.h \
-    memtype_api.h
+    memtype_api.h \
+    device.h
 
 FORMS    += mainwindow.ui \
     credentialwidget.ui \

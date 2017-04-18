@@ -96,7 +96,7 @@
          <string>Free credentials space in device.</string>
         </property>
         <property name="maximum">
-         <number>20</number>
+         <number>2048</number>
         </property>
         <property name="value">
          <number>0</number>
