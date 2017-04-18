@@ -35,7 +35,7 @@ static libusb_device_handle *dev;
  * @param [in] cred - credential
  * @return number of bytes to encrypt
  */
-static uint16_t memtype_encryptedSize(const credential_t * cred);
+static uint16_t memtype_encryptedSize(const memtype_credential_t * cred);
 
 /**
  * Computes the key for encryption based on pin
@@ -64,7 +64,7 @@ static memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len);
  */
 static memtype_ret_t memtype_receive(uint8_t * msg, uint8_t * len);
 
-static uint16_t memtype_encryptedSize(const credential_t * cred)
+static uint16_t memtype_encryptedSize(const memtype_credential_t * cred)
 {
 	uint16_t len = 0;
 
@@ -188,7 +188,7 @@ memtype_ret_t Memtype_disconnect(void)
 	return ret;
 }
 
-memtype_ret_t Memtype_info(device_info_t * info)
+memtype_ret_t Memtype_info(memtype_info_t * info)
 {
 	memtype_ret_t ret;
 	uint8_t msg[8] = { 5, 0, 0, 0, 0, 0, 0, 0 };
@@ -417,7 +417,7 @@ memtype_ret_t Memtype_isLocked(memtype_locked_t * lock)
 	return ret;
 }
 
-memtype_ret_t Memtype_encrypt(credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin)
+memtype_ret_t Memtype_encrypt(memtype_credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin)
 {
 	memtype_ret_t ret = NO_ERROR;
 	uint16_t i, j;
@@ -488,7 +488,7 @@ memtype_ret_t Memtype_encrypt(credential_t * list, uint16_t len, uint8_t * buff,
 	return ret;
 }
 
-memtype_ret_t Memtype_decrypt(credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin)
+memtype_ret_t Memtype_decrypt(memtype_credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin)
 {
 	memtype_ret_t ret = NO_ERROR;
 	uint16_t i, j;
@@ -564,7 +564,7 @@ memtype_ret_t Memtype_decrypt(credential_t * list, uint16_t len, uint8_t * buff,
 	return ret;
 }
 
-uint16_t Memtype_credBuffSize(credential_t * list, uint16_t len)
+uint16_t Memtype_credBuffSize(memtype_credential_t * list, uint16_t len)
 {
 	uint16_t i;
 	uint16_t bytes = 0;
