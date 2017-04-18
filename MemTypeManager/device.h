@@ -7,11 +7,11 @@ class device {
 
 private:
     bool present;
-    device_info_t info;
+    memtype_info_t info;
     memtype_locked_t locked;
 
 public:
-    device_info_t getInfo();
+    memtype_info_t getInfo();
 };
 
 #endif // DEVICE_H

@@ -1,6 +1,6 @@
 #include "device.h"
 
-device_info_t device::getInfo(void)
+memtype_info_t device::getInfo(void)
 {
     memtype_ret_t err;
 

@@ -14,7 +14,7 @@ int Credential::Size()
 {
     int size;
 
-    credential_t cred;
+    memtype_credential_t cred;
     cred.name = (char*)this->name.c_str();
     cred.user = (char*)this->user.c_str();
     cred.hop = (char*)this->hop.c_str();
