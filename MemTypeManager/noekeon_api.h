@@ -7,11 +7,10 @@
 extern "C" {
 #endif
 
-void NoekeonEncrypt(const uint32_t * const key, uint32_t * const data);
-void NoekeonDecrypt(const uint32_t * const key, uint32_t * const data);
+	void NoekeonEncrypt(const uint32_t * const key, uint32_t * const data);
+	void NoekeonDecrypt(const uint32_t * const key, uint32_t * const data);
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif                          /* NOEKEON_API_H */
+#endif				/* NOEKEON_API_H */
