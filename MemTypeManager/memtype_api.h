@@ -24,7 +24,7 @@ extern "C" {
 		char *hop;
 		char *pass;
 		char *submit;
-	} credential_t;
+	} memtype_credential_t;
 
 /** Device Info */
 	typedef struct device_info {
@@ -32,13 +32,13 @@ extern "C" {
 		uint8_t minor;
 		uint8_t patch;
 		uint16_t credSize;
-	} device_info_t;
+	} memtype_info_t;
 
 /** Function Prototype Declaration */
 	memtype_ret_t Memtype_init(void);
 	memtype_ret_t Memtype_connect(void);
 	memtype_ret_t Memtype_disconnect(void);
-	memtype_ret_t Memtype_info(device_info_t * info);
+	memtype_ret_t Memtype_info(memtype_info_t * info);
 	memtype_ret_t Memtype_write(const uint8_t * block, uint16_t len, uint16_t offset);
 	memtype_ret_t Memtype_read(uint8_t * block, uint16_t len, uint16_t offset);
 	memtype_ret_t Memtype_write_pin_hash(const uint8_t hash[16]);
@@ -59,13 +59,13 @@ extern "C" {
  * Encrypts a list of credentials and return the encrypted list in buff
  *
  */
-	memtype_ret_t Memtype_encrypt(credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin);
+	memtype_ret_t Memtype_encrypt(memtype_credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin);
 
 /**
  * Decrypts a list of credentials and return the encrypted list in buff
  *
  */
-	memtype_ret_t Memtype_decrypt(credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin);
+	memtype_ret_t Memtype_decrypt(memtype_credential_t * list, uint16_t len, uint8_t * buff, uint16_t size, uint16_t pin);
 
 /**
  * Computes the size of the buffer needed for credential list encryption
@@ -76,7 +76,7 @@ extern "C" {
  * @param [in] len - number of credentials 
  * @return size of the buffer needed to encrypt the list of credentials
  */
-	uint16_t Memtype_credBuffSize(credential_t * list, uint16_t len);
+	uint16_t Memtype_credBuffSize(memtype_credential_t * list, uint16_t len);
 
 /**
  * Computes the number of credentials in a encrypted buffer
