@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include "credentialwidget.h"
+#include "statuswidget.h"
 #include "credential.h"
+#include "device.h"
 #include "credentialeditwindow.h"
 #include "memtype_api.h"
 #include "noekeon_api.h"
@@ -12,6 +14,7 @@
 #include <QLabel>
 #include <QString>
 #include <QFileDialog>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -27,12 +30,14 @@ public:
 
 public slots:
     void addCredential(void);
-    void deleteCredential(Credential *cred);
-
+    void deleteCredential(Credential *cred);   
+    bool updateConnection();
 private:
     Ui::MainWindow *ui;
     QVector<Credential *> mCredentials;
     CredentialEditWindow* credWindow;
+    device dev;
+    statuswidget *stWidget;
 
     void renderCredentials();
     void editCredential(Credential *credential);

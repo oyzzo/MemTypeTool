@@ -30,6 +30,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //The read credentials button
     connect(ui->actionRead, &QAction::triggered, this, &MainWindow::memtypeLocked);
 
+    //Create a timmer for polling the state and info of the memtype
+    QTimer * connectionTimer = new QTimer(this);
+    connect(connectionTimer, SIGNAL(timeout()), this, SLOT(updateConnection()));
+    connectionTimer->start(1000);
+    this->stWidget = new statuswidget();
+    ui->mainToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
+    ui->mainToolBar->addWidget(stWidget);
 }
 
 MainWindow::~MainWindow()
@@ -159,19 +166,43 @@ void MainWindow::renderCredentials()
 
 bool MainWindow::memtypeLocked()
 {
-    Memtype_connect();
-
     memtype_locked_t lock;
+    lock = LOCKED;
 
-    if (Memtype_isLocked(&lock) == NO_ERROR) {
-        if (lock == LOCKED) {
-            qDebug() << "LOCKED!";
-        } else {
-            qDebug() << "UUUUUUUUNNNNN LOCKEEEEDDDD!!!";
+    if (this->dev.present) {
+
+        Memtype_connect();
+
+        if (Memtype_isLocked(&lock) == NO_ERROR) {
+            if (lock == LOCKED) {
+                qDebug() << "LOCKED!";
+            } else {
+                qDebug() << "UUUUUUUUNNNNN LOCKEEEEDDDD!!!";
+            }
         }
+
+        Memtype_disconnect();
+    }
+
+    return lock == LOCKED;
+}
+
+bool MainWindow::updateConnection()
+{
+    memtype_ret_t err;
+
+    err = Memtype_connect();
+
+    if (err == NO_ERROR) {
+        //device plugged to usb!
+        qDebug() << "Connected !!!";
+        this->dev.present = true;
+    } else {
+        //No device plugged to usb
+        qDebug() << "Not Connected :(";
+        this->dev.present = false;
     }
 
     Memtype_disconnect();
 
-    return lock == LOCKED;
 }

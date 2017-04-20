@@ -5,12 +5,12 @@
 
 class device {
 
-private:
+public:
     bool present;
     memtype_info_t info;
     memtype_locked_t locked;
+    bool talking;
 
-public:
     memtype_info_t getInfo();
 };
 
