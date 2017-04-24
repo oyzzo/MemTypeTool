@@ -3,6 +3,8 @@
 
 #include "memtype_api.h"
 
+#define MEMTYPE_BUFFER_SIZE 2048
+
 class device {
 
 public:

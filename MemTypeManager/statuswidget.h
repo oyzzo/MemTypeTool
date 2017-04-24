@@ -14,6 +14,8 @@ class statuswidget : public QWidget
 public:
     explicit statuswidget(QWidget *parent = 0);
     ~statuswidget();
+    void setConnected();
+    void setDisconnected();
 
 private:
     Ui::statuswidget *ui;

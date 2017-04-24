@@ -18,7 +18,7 @@
 #endif				/* _WINDOWS */
 
 /* CONFIGURATION defines */
-#define PRINTF              printf
+#define PRINTF
 #define PRINT_FUNCTION()    PRINTF("Called -- %s\n", __FUNCTION__)
 #define USB_WAIT_10ms()     {Sleep(10);}
 #define USB_WAIT_50ms()     {Sleep(50);}

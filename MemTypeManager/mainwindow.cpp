@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionImport_File, &QAction::triggered, this, &MainWindow::importCredentials);
 
     //The read credentials button
-    connect(ui->actionRead, &QAction::triggered, this, &MainWindow::memtypeLocked);
+    connect(ui->actionRead, &QAction::triggered, this, &MainWindow::readFromDevice);
 
     //Create a timmer for polling the state and info of the memtype
     QTimer * connectionTimer = new QTimer(this);
@@ -164,6 +164,68 @@ void MainWindow::renderCredentials()
     this->ui->progressBar->setValue(size);
 }
 
+void MainWindow::readFromDevice()
+{
+    if (!this->dev.present) {
+        qDebug() << "No device found.";
+        qDebug() << "Can't read from locked device.";
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "No device found.", 0, this);
+            msgBox.setDetailedText("To read from your MemType device it has to be connected to a USB port. If the device is connected check the documentation to ensure the installation is Ok and your user has access rights to the USB.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        return;
+    }
+
+    if (memtypeLocked()) {
+        qDebug() << "Can't read from locked device.";
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "Device Locked.", 0, this);
+            msgBox.setDetailedText("You must unlock your MemType device first by entering the P.I.N. using the joystick.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        return;
+    }
+
+    if (this->mCredentials.length() != 0) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Credentials from device will be added after current credentials, continue?",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.addButton(tr("&Cancel"), QMessageBox::RejectRole);
+
+       if (msgBox.exec() == QMessageBox::RejectRole)
+           return;
+    }
+
+    Memtype_connect();
+
+    uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE);
+    Memtype_read(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+    int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
+    memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
+
+    Memtype_decrypt(list, clen, cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+
+    for (int i = 0; i < clen; i++) {
+        auto cred = new Credential();
+        cred->name = list[i].name;
+        cred->user = list[i].user;
+        cred->hop = list[i].hop;
+        cred->password = list[i].pass;
+        cred->submit = list[i].submit;
+
+        this->mCredentials.append(cred);
+    }
+    free(list);
+    free(cred_buff);
+
+    Memtype_disconnect();
+
+    renderCredentials();
+
+    QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Credential read complete.",0,this);
+    msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+    msgBox.exec();
+
+}
+
 bool MainWindow::memtypeLocked()
 {
     memtype_locked_t lock;
@@ -173,12 +235,8 @@ bool MainWindow::memtypeLocked()
 
         Memtype_connect();
 
-        if (Memtype_isLocked(&lock) == NO_ERROR) {
-            if (lock == LOCKED) {
-                qDebug() << "LOCKED!";
-            } else {
-                qDebug() << "UUUUUUUUNNNNN LOCKEEEEDDDD!!!";
-            }
+        if (Memtype_isLocked(&lock) != NO_ERROR) {
+            qDebug() << "Error checking lock on device.";
         }
 
         Memtype_disconnect();
@@ -195,12 +253,12 @@ bool MainWindow::updateConnection()
 
     if (err == NO_ERROR) {
         //device plugged to usb!
-        qDebug() << "Connected !!!";
         this->dev.present = true;
+        this->stWidget->setConnected();
     } else {
         //No device plugged to usb
-        qDebug() << "Not Connected :(";
         this->dev.present = false;
+        this->stWidget->setDisconnected();
     }
 
     Memtype_disconnect();

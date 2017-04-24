@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <QProgressDialog>
 
 int main(int argc, char *argv[])
 {

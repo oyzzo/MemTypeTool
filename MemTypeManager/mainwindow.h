@@ -15,6 +15,10 @@
 #include <QString>
 #include <QFileDialog>
 #include <QTimer>
+#include <QMessageBox>
+#include <QProgressDialog>
+#include <QFuture>
+#include <QtConcurrent/qtconcurrentrun.h>
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +51,7 @@ private:
     void exportCredentials();
     void importCredentials();
     bool memtypeLocked();
+    void readFromDevice();
 };
 
 #endif // MAINWINDOW_H

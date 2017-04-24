@@ -40,7 +40,7 @@
        <item>
         <widget class="QPushButton" name="statusButton">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
