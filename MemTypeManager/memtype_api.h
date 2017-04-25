@@ -44,6 +44,8 @@ extern "C" {
 	memtype_ret_t Memtype_write_pin_hash(const uint8_t hash[16]);
 	memtype_ret_t Memtype_read_pin_hash(uint8_t hash[16]);
 	memtype_ret_t Memtype_write_keyboard(const uint8_t layout[128]);
+    memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len);
+    memtype_ret_t memtype_receive(uint8_t * msg, uint8_t * len);
 
 /**
  * Sends info command to check if the device is locked or not

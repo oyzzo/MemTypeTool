@@ -30,13 +30,17 @@ MainWindow::MainWindow(QWidget *parent) :
     //The read credentials button
     connect(ui->actionRead, &QAction::triggered, this, &MainWindow::readFromDevice);
 
+    //Validate the PIN
+    connect(ui->pinEdit, &QLineEdit::editingFinished, this, &MainWindow::validatePIN);
+
     //Create a timmer for polling the state and info of the memtype
-    QTimer * connectionTimer = new QTimer(this);
+    this->connectionTimer = new QTimer(this);
     connect(connectionTimer, SIGNAL(timeout()), this, SLOT(updateConnection()));
     connectionTimer->start(1000);
     this->stWidget = new statuswidget();
     ui->mainToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
     ui->mainToolBar->addWidget(stWidget);
+    ui->pinEdit->setValidator(new QIntValidator);
 }
 
 MainWindow::~MainWindow()
@@ -166,6 +170,7 @@ void MainWindow::renderCredentials()
 
 void MainWindow::readFromDevice()
 {
+    this->connectionTimer->stop();
     if (!this->dev.present) {
         qDebug() << "No device found.";
         qDebug() << "Can't read from locked device.";
@@ -197,7 +202,7 @@ void MainWindow::readFromDevice()
     Memtype_connect();
 
     uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE);
-    Memtype_read(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+    Memtype_readProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
     int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
     memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
 
@@ -223,7 +228,7 @@ void MainWindow::readFromDevice()
     QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Credential read complete.",0,this);
     msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
     msgBox.exec();
-
+    this->connectionTimer->start(1000);
 }
 
 bool MainWindow::memtypeLocked()
@@ -262,5 +267,61 @@ bool MainWindow::updateConnection()
     }
 
     Memtype_disconnect();
+    return this->dev.present;
+}
 
+memtype_ret_t MainWindow::Memtype_readProgress(uint8_t * block, uint16_t len, uint16_t offset)
+{
+    QProgressDialog progress("Reading...", "&Cancel", 0, len, this);
+    progress.show();
+
+
+    memtype_ret_t ret;
+    uint8_t msg[8] = { 2, 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t l = sizeof(msg);
+    uint16_t i;
+    uint8_t *buff = block;
+
+    /* Prepare command for offset and size */
+    msg[1] = offset & 0xFF;
+    msg[2] = (offset >> 8) & 0xFF;
+    msg[3] = len & 0xFF;
+    msg[4] = (len >> 8) & 0xFF;
+
+    if ((block != NULL) && ((len + offset) <= 2048) && ((len % 8) == 0)) {
+        /* Send CMD */
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        ret = memtype_send(msg, &l);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+
+        if (msg[0] == 2) {
+            /* Read Data */
+            for (i = 0; i < len; i += 8) {
+                progress.setValue(i);
+                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+                l = 8;
+                memtype_receive(&buff[i], &l);
+                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+            }
+        } else {
+            ret = ERROR;
+        }
+
+    } else {
+        ret = ERROR;
+    }
+    progress.setValue(len);
+    return ret;
+}
+
+void MainWindow::validatePIN()
+{
+    if (ui->pinEdit->text().length() != 4) {
+        QMessageBox msgBox (QMessageBox::Information, tr("Info"), "PIN must be a 4 digit number from 0000 to 9999.",0,this);
+        msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        ui->pinEdit->setText("");
+    }
 }

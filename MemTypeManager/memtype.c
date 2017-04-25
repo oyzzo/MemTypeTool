@@ -53,7 +53,7 @@ static void memtype_pinToKey(const uint8_t pin[4], uint32_t key[4]);
  * @return NO_ERROR - Command succesfully sent, data available in msg buffer
  * @return ERROR - Error occourred
  */
-static memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len);
+memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len);
 
 /**
  * Do USB HID Get Report to receive data from memtype
@@ -62,7 +62,7 @@ static memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len);
  * @return NO_ERROR - Command succesfully sent, data available in msg buffer
  * @return ERROR - Error occourred
  */
-static memtype_ret_t memtype_receive(uint8_t * msg, uint8_t * len);
+memtype_ret_t memtype_receive(uint8_t * msg, uint8_t * len);
 
 static uint16_t memtype_encryptedSize(const memtype_credential_t * cred)
 {
@@ -89,7 +89,7 @@ static void memtype_pinToKey(const uint8_t pin[4], uint32_t key[4])
 	memcpy(&key[3], pin, 4);
 }
 
-static memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len)
+memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len)
 {
 	memtype_ret_t ret = NO_ERROR;
 	uint16_t reportId = 2;
@@ -116,7 +116,7 @@ static memtype_ret_t memtype_send(uint8_t * msg, uint8_t * len)
 	return ret;
 }
 
-static memtype_ret_t memtype_receive(uint8_t * msg, uint8_t * len)
+memtype_ret_t memtype_receive(uint8_t * msg, uint8_t * len)
 {
 	memtype_ret_t ret = NO_ERROR;
 	uint16_t reportId = 2;

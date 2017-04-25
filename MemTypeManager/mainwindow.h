@@ -19,6 +19,7 @@
 #include <QProgressDialog>
 #include <QFuture>
 #include <QtConcurrent/qtconcurrentrun.h>
+#include <QIntValidator>
 
 namespace Ui {
 class MainWindow;
@@ -36,12 +37,14 @@ public slots:
     void addCredential(void);
     void deleteCredential(Credential *cred);   
     bool updateConnection();
+    void validatePIN();
 private:
     Ui::MainWindow *ui;
     QVector<Credential *> mCredentials;
     CredentialEditWindow* credWindow;
     device dev;
     statuswidget *stWidget;
+    QTimer *connectionTimer;
 
     void renderCredentials();
     void editCredential(Credential *credential);
@@ -52,6 +55,7 @@ private:
     void importCredentials();
     bool memtypeLocked();
     void readFromDevice();
+    memtype_ret_t Memtype_readProgress(uint8_t *block, uint16_t len, uint16_t offset);
 };
 
 #endif // MAINWINDOW_H
