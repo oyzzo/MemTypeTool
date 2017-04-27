@@ -38,6 +38,9 @@ public slots:
     void deleteCredential(Credential *cred);   
     bool updateConnection();
     void validatePIN();
+    void showPin();
+    void hidePin();
+    void cleanCredentialList();
 private:
     Ui::MainWindow *ui;
     QVector<Credential *> mCredentials;

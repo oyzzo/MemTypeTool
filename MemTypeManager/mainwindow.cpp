@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //The add credential button
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::addCredential);
 
+    //The clean credentials button
+    connect(ui->cleanButton, &QPushButton::clicked, this, &MainWindow::cleanCredentialList);
+
     //The Load Keyboard Layout button
     connect(ui->actionSet_KeyLayout, &QAction::triggered, this, &MainWindow::loadLayout);
 
@@ -29,6 +32,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //The read credentials button
     connect(ui->actionRead, &QAction::triggered, this, &MainWindow::readFromDevice);
+
+    //The show credentials button
+    connect(ui->seeButton, &QPushButton::pressed, this, &MainWindow::showPin);
+
+    //The hide credentials button
+    connect(ui->seeButton, &QPushButton::released, this, &MainWindow::hidePin);
 
     //Validate the PIN
     connect(ui->pinEdit, &QLineEdit::editingFinished, this, &MainWindow::validatePIN);
@@ -47,7 +56,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 
-    //clean up the credentialsi
+    //clean up the credentials
     for (auto t : this->mCredentials) {
         delete t;
     }
@@ -144,7 +153,7 @@ void MainWindow::moveDownCredential(Credential* credential)
 
 void MainWindow::renderCredentials()
 {
-    int size = 0;
+    uint16_t size = 0;
 
     while (!this->ui->scrollLayout->isEmpty()){
         QWidget* w = this->ui->scrollLayout->itemAt(0)->widget();
@@ -178,6 +187,7 @@ void MainWindow::readFromDevice()
             msgBox.setDetailedText("To read from your MemType device it has to be connected to a USB port. If the device is connected check the documentation to ensure the installation is Ok and your user has access rights to the USB.");
             msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
         msgBox.exec();
+        this->connectionTimer->start(1000);
         return;
     }
 
@@ -187,6 +197,7 @@ void MainWindow::readFromDevice()
             msgBox.setDetailedText("You must unlock your MemType device first by entering the P.I.N. using the joystick.");
             msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
         msgBox.exec();
+        this->connectionTimer->start(1000);
         return;
     }
 
@@ -195,9 +206,21 @@ void MainWindow::readFromDevice()
        msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
        msgBox.addButton(tr("&Cancel"), QMessageBox::RejectRole);
 
-       if (msgBox.exec() == QMessageBox::RejectRole)
+       if (msgBox.exec() == QMessageBox::RejectRole) {
+           this->connectionTimer->start(1000);
            return;
+       }
     }
+
+    if (ui->pinEdit->text().length() != 4) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Please introduce the device PIN to decrypt credentials.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       return;
+    }
+
 
     Memtype_connect();
 
@@ -206,7 +229,9 @@ void MainWindow::readFromDevice()
     int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
     memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
 
-    Memtype_decrypt(list, clen, cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+
+
+    Memtype_decrypt(list, clen, cred_buff, MEMTYPE_BUFFER_SIZE, ui->pinEdit->text().toInt());
 
     for (int i = 0; i < clen; i++) {
         auto cred = new Credential();
@@ -313,6 +338,7 @@ memtype_ret_t MainWindow::Memtype_readProgress(uint8_t * block, uint16_t len, ui
         ret = ERROR;
     }
     progress.setValue(len);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     return ret;
 }
 
@@ -324,4 +350,32 @@ void MainWindow::validatePIN()
         msgBox.exec();
         ui->pinEdit->setText("");
     }
+}
+
+void MainWindow::showPin()
+{
+    ui->pinEdit->setEchoMode(QLineEdit::Normal);
+}
+
+void MainWindow::hidePin()
+{
+    ui->pinEdit->setEchoMode(QLineEdit::Password);
+}
+
+void MainWindow::cleanCredentialList()
+{
+
+    if (this->mCredentials.length() != 0) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "All the credentials will be deleted from the list, continue?",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.addButton(tr("&Cancel"), QMessageBox::RejectRole);
+
+       if (msgBox.exec() == QMessageBox::RejectRole) {
+           return;
+       }
+    }
+
+     //clean up the credentials
+    this->mCredentials.clear();
+    renderCredentials();
 }

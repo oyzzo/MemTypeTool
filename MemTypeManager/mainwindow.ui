@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>482</width>
-    <height>300</height>
+    <width>537</width>
+    <height>634</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>460</width>
-           <height>131</height>
+           <width>515</width>
+           <height>465</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -75,6 +75,24 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="cleanButton">
+        <property name="toolTip">
+         <string>Clean list.</string>
+        </property>
+        <property name="statusTip">
+         <string>Clean all credentials on the list.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/img/eraser.png</normalon>
+         </iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -86,6 +104,24 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="seeButton">
+        <property name="toolTip">
+         <string>Show PIN</string>
+        </property>
+        <property name="statusTip">
+         <string>Shows the PIN while pressing down.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normalon>:/img/eye-open.png</normalon>
+         </iconset>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLineEdit" name="pinEdit">
@@ -111,7 +147,7 @@
          <bool>true</bool>
         </property>
         <property name="echoMode">
-         <enum>QLineEdit::PasswordEchoOnEdit</enum>
+         <enum>QLineEdit::Password</enum>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -161,7 +197,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>482</width>
+     <width>537</width>
      <height>22</height>
     </rect>
    </property>

@@ -11,5 +11,7 @@
         <file>img/trashcan.png</file>
         <file>img/up.png</file>
         <file>img/write.png</file>
+        <file>img/eye-open.png</file>
+        <file>img/eraser.png</file>
     </qresource>
 </RCC>

@@ -18,7 +18,7 @@ public:
     bool fits; // Is the credential writted into device?
 
     Credential();
-    int Size();
+    uint16_t Size();
 };
 
 #endif // CREDENTIAL_H

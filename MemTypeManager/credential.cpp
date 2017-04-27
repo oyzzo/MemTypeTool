@@ -10,9 +10,9 @@ Credential::Credential()
     this->fits = false;
 }
 
-int Credential::Size()
+uint16_t Credential::Size()
 {
-    int size;
+    uint16_t size;
 
     memtype_credential_t cred;
     cred.name = (char*)this->name.c_str();
