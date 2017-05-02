@@ -9,20 +9,6 @@
 #include <libusb.h>
 #include <string.h>
 
-/* Sleep Time includes */
-#ifdef _WINDOWS
-#include <windows.h>
-#else
-#include <unistd.h>
-#define Sleep(x) usleep((x)*1000)
-#endif				/* _WINDOWS */
-
-/* CONFIGURATION defines */
-#define PRINTF
-#define PRINT_FUNCTION()    PRINTF("Called -- %s\n", __FUNCTION__)
-#define USB_WAIT_10ms()     {Sleep(10);}
-#define USB_WAIT_50ms()     {Sleep(50);}
-
 /* Local Vars */
 static uint16_t vendor_id = 0x1209;
 static uint16_t product_id = 0xa033;

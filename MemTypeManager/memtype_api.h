@@ -4,6 +4,20 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/* Sleep Time includes */
+#ifdef _WINDOWS
+#include <windows.h>
+#else
+#include <unistd.h>
+#define Sleep(x) usleep((x)*1000)
+#endif				/* _WINDOWS */
+
+/* CONFIGURATION defines */
+#define PRINTF
+#define PRINT_FUNCTION()    PRINTF("Called -- %s\n", __FUNCTION__)
+#define USB_WAIT_10ms()     {Sleep(10);}
+#define USB_WAIT_50ms()     {Sleep(50);}
+
 #ifdef __cplusplus
 extern "C" {
 #endif

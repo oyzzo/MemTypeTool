@@ -44,6 +44,9 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QVector<Credential *> mCredentials;
+    int credentialsSize;
+    int writeSize;
+    bool sizeMessage;
     CredentialEditWindow* credWindow;
     device dev;
     statuswidget *stWidget;
@@ -59,6 +62,8 @@ private:
     bool memtypeLocked();
     void readFromDevice();
     memtype_ret_t Memtype_readProgress(uint8_t *block, uint16_t len, uint16_t offset);
+    void writeToDevice();
+    memtype_ret_t Memtype_writeProgress(const uint8_t *block, uint16_t len, uint16_t offset);
 };
 
 #endif // MAINWINDOW_H

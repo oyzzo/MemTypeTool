@@ -33,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //The read credentials button
     connect(ui->actionRead, &QAction::triggered, this, &MainWindow::readFromDevice);
 
+    //The write credentials button
+    connect(ui->actionWrite, &QAction::triggered, this, &MainWindow::writeToDevice);
+
     //The show credentials button
     connect(ui->seeButton, &QPushButton::pressed, this, &MainWindow::showPin);
 
@@ -153,7 +156,7 @@ void MainWindow::moveDownCredential(Credential* credential)
 
 void MainWindow::renderCredentials()
 {
-    uint16_t size = 0;
+    this->credentialsSize = 0;
 
     while (!this->ui->scrollLayout->isEmpty()){
         QWidget* w = this->ui->scrollLayout->itemAt(0)->widget();
@@ -163,7 +166,7 @@ void MainWindow::renderCredentials()
 
     for (auto t : this->mCredentials) {
         auto credWidget = new credentialWidget();
-        size += t->Size();
+        this->credentialsSize += t->Size();
         connect(credWidget, &credentialWidget::deleteCredential, this, &MainWindow::deleteCredential);
         connect(credWidget, &credentialWidget::editCredential, this, &MainWindow::editCredential);
         connect(credWidget, &credentialWidget::upCredential, this, &MainWindow::moveUpCredential);
@@ -174,7 +177,18 @@ void MainWindow::renderCredentials()
         this->ui->scrollLayout->addWidget(credWidget);
     }
 
-    this->ui->progressBar->setValue(size);
+    if (this->credentialsSize < 2048) {
+        this->ui->progressBar->setValue(this->credentialsSize);
+        this->sizeMessage = false;
+    } else {
+        this->ui->progressBar->setValue(2048);
+        if (!this->sizeMessage) {
+            this->sizeMessage = true;
+            QMessageBox msgBox (QMessageBox::Information, tr("Info"), "The credential list is bigger than the device memory.\nYou can work with any number of credentials but remember if you write them into a MemType, some of them may not fit into the memory.\n\nRemember to save the credential list as a file.",0,this);
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+            msgBox.exec();
+        }
+    }
 }
 
 void MainWindow::readFromDevice()
@@ -256,6 +270,96 @@ void MainWindow::readFromDevice()
     this->connectionTimer->start(1000);
 }
 
+void MainWindow::writeToDevice()
+{
+    this->connectionTimer->stop();
+    if (!this->dev.present) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "No device found.", 0, this);
+            msgBox.setDetailedText("To write to your MemType device it has to be connected to a USB port. If the device is connected check the documentation to ensure the installation is Ok and your user has access rights to the USB.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        this->connectionTimer->start(1000);
+        return;
+    }
+
+    if (memtypeLocked()) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "Device Locked.", 0, this);
+            msgBox.setDetailedText("You must unlock your MemType device first by entering the P.I.N. using the joystick.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        this->connectionTimer->start(1000);
+        return;
+    }
+
+    if (this->credentialsSize > MEMTYPE_BUFFER_SIZE) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Some credentials won't fit into the device memory. The credentials that won't fit will be marked.\nRemember to save files to prevent credential loss.\n\nContinue?",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.addButton(tr("&Cancel"), QMessageBox::RejectRole);
+
+       if (msgBox.exec() == QMessageBox::RejectRole) {
+           this->connectionTimer->start(1000);
+           return;
+       }
+    }
+
+    QMessageBox msgBoxi (QMessageBox::Information, tr("Info"), "This operation will overwrite all the credentials on the device with the ones on the list.\n\nContinue?",0,this);
+    msgBoxi.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+    msgBoxi.addButton(tr("&Cancel"), QMessageBox::RejectRole);
+
+    if (msgBoxi.exec() == QMessageBox::RejectRole) {
+        this->connectionTimer->start(1000);
+        return;
+    }
+
+
+    if (ui->pinEdit->text().length() != 4) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Please introduce the device PIN to decrypt credentials.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       return;
+    }
+
+
+    Memtype_connect();
+
+    /* Allocate space */
+    memtype_credential_t *cred_buff = (memtype_credential_t*)malloc(MEMTYPE_BUFFER_SIZE);
+
+    this->writeSize = 0;
+    int i = 0;
+    while ((this->writeSize < MEMTYPE_BUFFER_SIZE) && (i < this->mCredentials.length())) {
+        auto cred = this->mCredentials.at(i);
+        this->writeSize += cred->Size();
+        cred_buff[i].name = (char*)cred->name.c_str();
+        cred_buff[i].user = (char*)cred->user.c_str();
+        cred_buff[i].hop = (char*)cred->hop.c_str();
+        cred_buff[i].pass = (char*)cred->password.c_str();
+        cred_buff[i].submit = (char*)cred->submit.c_str();
+        i++;
+    }
+
+    int clen = i;
+    int buffsize = Memtype_credBuffSize(cred_buff,clen);
+    uint8_t *buf = (uint8_t*)malloc(buffsize);
+    Memtype_encrypt(cred_buff,clen,buf,buffsize,ui->pinEdit->text().toInt());
+
+    Memtype_writeProgress(buf, buffsize, 0);
+    free(buf);
+    free(cred_buff);
+
+    Memtype_disconnect();
+
+    renderCredentials();
+
+    QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Credential write complete.",0,this);
+    msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+    msgBox.exec();
+    this->connectionTimer->start(1000);
+}
+
+
 bool MainWindow::memtypeLocked()
 {
     memtype_locked_t lock;
@@ -294,6 +398,66 @@ bool MainWindow::updateConnection()
     Memtype_disconnect();
     return this->dev.present;
 }
+
+memtype_ret_t MainWindow::Memtype_writeProgress(const uint8_t * block, uint16_t len, uint16_t offset)
+{
+    QProgressDialog progress("Writting...", "&Cancel", 0, len, this);
+    progress.show();
+
+    memtype_ret_t ret;
+    uint8_t *buff;
+    uint8_t msg[8] = { 3, 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t l = sizeof(msg);
+    uint16_t i;
+
+    /* Prepare command for offset and size */
+    msg[1] = offset & 0xFF;
+    msg[2] = (offset >> 8) & 0xFF;
+    msg[3] = len & 0xFF;
+    msg[4] = (len >> 8) & 0xFF;
+
+    /* Prepare Buffer to dynamic allocated memory */
+    /* Allocate 8 bytes more than needed */
+    buff = (uint8_t *) malloc(len + 8);
+
+    if ((block != NULL) && (buff != NULL) && ((len + offset) < MEMTYPE_BUFFER_SIZE)) {
+        /* Send CMD */
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        ret = memtype_send(msg, &l);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        memcpy(buff, block, len);
+
+        if (msg[0] == 3) {
+            /* Send Data to write */
+            for (i = 0; i < len; i += 8) {
+                l = 8;
+                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+                memtype_send(&buff[i], &l);
+                USB_WAIT_50ms();
+                progress.setValue(i);
+                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+            }
+            /* Compare buff and block to be equal */
+            if (memcmp(buff, block, len) != 0) {
+                ret = ERROR;
+            }
+
+        } else {
+            ret = ERROR;
+        }
+
+    } else {
+        ret = ERROR;
+    }
+
+    /* Free dynamic allocated memory */
+    free(buff);
+    progress.setValue(len);
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    return ret;
+}
+
 
 memtype_ret_t MainWindow::Memtype_readProgress(uint8_t * block, uint16_t len, uint16_t offset)
 {

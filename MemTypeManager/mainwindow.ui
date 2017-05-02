@@ -162,6 +162,9 @@
       </item>
       <item>
        <widget class="QProgressBar" name="progressBar">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
