@@ -36,6 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //The write credentials button
     connect(ui->actionWrite, &QAction::triggered, this, &MainWindow::writeToDevice);
 
+    //The set pin credentials button
+    connect(ui->actionSet_PIN, &QAction::triggered, this, &MainWindow::setPinToDevice);
+
     //The show credentials button
     connect(ui->seeButton, &QPushButton::pressed, this, &MainWindow::showPin);
 
@@ -195,8 +198,6 @@ void MainWindow::readFromDevice()
 {
     this->connectionTimer->stop();
     if (!this->dev.present) {
-        qDebug() << "No device found.";
-        qDebug() << "Can't read from locked device.";
         QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "No device found.", 0, this);
             msgBox.setDetailedText("To read from your MemType device it has to be connected to a USB port. If the device is connected check the documentation to ensure the installation is Ok and your user has access rights to the USB.");
             msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
@@ -542,4 +543,112 @@ void MainWindow::cleanCredentialList()
      //clean up the credentials
     this->mCredentials.clear();
     renderCredentials();
+}
+
+void MainWindow::setPinToDevice()
+{
+    this->connectionTimer->stop();
+    if (!this->dev.present) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "No device found.", 0, this);
+            msgBox.setDetailedText("To change the PIN from your MemType device it has to be connected to a USB port. If the device is connected check the documentation to ensure the installation is Ok and your user has access rights to the USB.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        this->connectionTimer->start(1000);
+        return;
+    }
+
+    if (memtypeLocked()) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "Device Locked.", 0, this);
+            msgBox.setDetailedText("You must unlock your MemType device first by entering the P.I.N. using the joystick.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        this->connectionTimer->start(1000);
+        return;
+    }
+
+    if (ui->pinEdit->text().length() != 4) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Please introduce the device PIN to continue.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       return;
+    }
+
+    bool ok;
+    QString new_pin1 = QInputDialog::getText(this, tr("Change PIN"),
+                                         tr("New PIN:"), QLineEdit::Password,
+                                         "", &ok);
+    if (!ok) {
+       this->connectionTimer->start(1000);
+       return;
+    }
+    /* Validate new PIN */
+    bool intOK;
+    int new_pin1_int = new_pin1.toInt(&intOK);
+    if (new_pin1.length() != 4 || !intOK || new_pin1_int < 0 || new_pin1_int > 9999) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "PIN must be a 4 digit number from 0000 to 9999.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+
+       this->connectionTimer->start(1000);
+       return;
+    }
+
+    QString new_pin2 = QInputDialog::getText(this, tr("Confirm PIN"),
+                                         tr("Repeat New PIN:"), QLineEdit::Password,
+                                         "", &ok);
+    if (!ok) {
+       this->connectionTimer->start(1000);
+       return;
+    }
+    /* Validate new PIN */
+    int new_pin2_int = new_pin2.toInt(&intOK);
+    if (new_pin2.length() != 4 || !intOK || new_pin2_int < 0 || new_pin2_int > 9999) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "PIN must be a 4 digit number from 0000 to 9999.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       return;
+    }
+
+    if (new_pin1_int != new_pin2_int) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Error confirming the PIN.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       return;
+    }
+
+
+    Memtype_connect();
+
+    /* read all the credentials from the device and decrypt */
+    uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE);
+    Memtype_readProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+    int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
+    memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
+
+
+
+    Memtype_decrypt(list, clen, cred_buff, MEMTYPE_BUFFER_SIZE, ui->pinEdit->text().toInt());
+
+
+
+   /* encrypt and write back to device */
+
+    Memtype_encrypt(list,clen,cred_buff,clen*(sizeof(memtype_credential_t)),new_pin1_int);
+
+    Memtype_writeProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+
+    free(list);
+    free(cred_buff);
+
+    Memtype_disconnect();
+
+    QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Set PIN complete.",0,this);
+    msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+    msgBox.exec();
+    this->connectionTimer->start(1000);
+
 }

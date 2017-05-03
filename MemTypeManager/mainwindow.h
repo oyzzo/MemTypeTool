@@ -20,6 +20,7 @@
 #include <QFuture>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QIntValidator>
+#include <QInputDialog>
 
 namespace Ui {
 class MainWindow;
@@ -41,6 +42,7 @@ public slots:
     void showPin();
     void hidePin();
     void cleanCredentialList();
+    void setPinToDevice();
 private:
     Ui::MainWindow *ui;
     QVector<Credential *> mCredentials;
