@@ -5,6 +5,7 @@
 
 #define MEMTYPE_BUFFER_SIZE 2048
 #define MEMTYPE_HASH_LENGTH 16
+#define MEMTYPE_KEYBOARD_SIZE 128
 
 class device {
 

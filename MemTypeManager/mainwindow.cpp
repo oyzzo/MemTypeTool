@@ -75,10 +75,58 @@ MainWindow::~MainWindow()
 // Load Keyboard Layout
 void MainWindow::loadLayout()
 {
+    uint8_t buffer[MEMTYPE_KEYBOARD_SIZE];
+    int i = 0;
     QString filename = QFileDialog::getOpenFileName(this);
 
+    this->connectionTimer->stop();
+
+    if (!this->dev.present) {
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "No device found.", 0, this);
+            msgBox.setDetailedText("The MemType device has to be connected to a USB port. If the device is connected check the documentation to ensure the installation is Ok and your user has access rights to the USB.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        this->connectionTimer->start(1000);
+        return;
+    }
+
+    if (memtypeLocked()) {
+        qDebug() << "Can't read from locked device.";
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), "Device Locked.", 0, this);
+            msgBox.setDetailedText("You must unlock your MemType device first by entering the P.I.N. using the joystick.");
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+        this->connectionTimer->start(1000);
+        return;
+    }
+
     if (!filename.isEmpty()) {
-        qDebug() << filename;
+        QFile file(filename);
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox msgBox (QMessageBox::Warning, tr("Info"), file.errorString(),0,this);
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+            msgBox.exec();
+            return;
+        }
+
+        if (!file.atEnd()) {
+            QByteArray line = file.readLine();
+            auto bytes = line.split(',');
+            for (i = 0; i < bytes.length(); i++) {
+                buffer[i] = bytes.at(i).toInt();
+            }
+        }
+       Memtype_connect();
+       if (Memtype_write_keyboard(buffer) == ERROR) {
+           QMessageBox msgBox (QMessageBox::Warning, tr("Info"), "Error writting the keyboard layout to the device.",0,this);
+           msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+           msgBox.exec();
+       }
+       Memtype_disconnect();
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Set keyboard layout complete.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
     }
 }
 
