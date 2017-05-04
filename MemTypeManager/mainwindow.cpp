@@ -629,22 +629,26 @@ void MainWindow::setPinToDevice()
     int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
     memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
 
-
-
     Memtype_decrypt(list, clen, cred_buff, MEMTYPE_BUFFER_SIZE, ui->pinEdit->text().toInt());
-
-
 
    /* encrypt and write back to device */
 
-    Memtype_encrypt(list,clen,cred_buff,clen*(sizeof(memtype_credential_t)),new_pin1_int);
+    int buffsize = Memtype_credBuffSize(list,clen);
+    uint8_t *ebuf = (uint8_t*)malloc(buffsize);
+    Memtype_encrypt(list,clen,ebuf,buffsize,new_pin1_int);
 
-    Memtype_writeProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
+    Memtype_writeProgress(ebuf,buffsize, 0);
+    uint8_t hash[MEMTYPE_HASH_LENGTH];
+
+    Memtype_pinToHash(new_pin1_int,hash);
+    Memtype_write_pin_hash(hash);
 
     free(list);
     free(cred_buff);
 
     Memtype_disconnect();
+
+    ui->pinEdit->setText(new_pin2);
 
     QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Set PIN complete.",0,this);
     msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);

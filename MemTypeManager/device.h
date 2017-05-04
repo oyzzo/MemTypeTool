@@ -4,6 +4,7 @@
 #include "memtype_api.h"
 
 #define MEMTYPE_BUFFER_SIZE 2048
+#define MEMTYPE_HASH_LENGTH 16
 
 class device {
 
