@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     noekeon.c \
     memtype.c \
     device.cpp \
-    statuswidget.cpp
+    statuswidget.cpp \
+    versionwindow.cpp
 
 HEADERS  += mainwindow.h \
     credentialwidget.h \
@@ -40,12 +41,14 @@ HEADERS  += mainwindow.h \
     noekeon_api.h \
     memtype_api.h \
     device.h \
-    statuswidget.h
+    statuswidget.h \
+    versionwindow.h
 
 FORMS    += mainwindow.ui \
     credentialwidget.ui \
     credentialeditwindow.ui \
-    statuswidget.ui
+    statuswidget.ui \
+    versionwindow.ui
 
 RESOURCES += \
     resources.qrc

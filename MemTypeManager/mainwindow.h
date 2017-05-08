@@ -9,6 +9,7 @@
 #include "credentialeditwindow.h"
 #include "memtype_api.h"
 #include "noekeon_api.h"
+#include "versionwindow.h"
 #include <QApplication>
 #include <QDebug>
 #include <QLabel>
@@ -21,6 +22,7 @@
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QIntValidator>
 #include <QInputDialog>
+#include <QDesktopServices>
 
 namespace Ui {
 class MainWindow;
@@ -43,6 +45,7 @@ public slots:
     void hidePin();
     void cleanCredentialList();
     void setPinToDevice();
+    void showVersion();
 private:
     Ui::MainWindow *ui;
     QVector<Credential *> mCredentials;

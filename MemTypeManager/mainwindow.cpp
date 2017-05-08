@@ -39,6 +39,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //The set pin credentials button
     connect(ui->actionSet_PIN, &QAction::triggered, this, &MainWindow::setPinToDevice);
 
+    //The version window
+    connect(ui->actionMemTypeTool, &QAction::triggered, this, &MainWindow::showVersion);
+
     //The show credentials button
     connect(ui->seeButton, &QPushButton::pressed, this, &MainWindow::showPin);
 
@@ -690,7 +693,6 @@ void MainWindow::setPinToDevice()
 
     Memtype_pinToHash(new_pin1_int,hash);
     Memtype_write_pin_hash(hash);
-
     free(list);
     free(cred_buff);
 
@@ -704,3 +706,10 @@ void MainWindow::setPinToDevice()
     this->connectionTimer->start(1000);
 
 }
+
+void MainWindow::showVersion()
+{
+    auto versionWindow = new VersionWindow();
+    versionWindow->show();
+}
+
