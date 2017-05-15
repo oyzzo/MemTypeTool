@@ -139,7 +139,69 @@ void MainWindow::importCredentials()
     QString filename = QFileDialog::getOpenFileName(this);
 
     if (!filename.isEmpty()) {
-        qDebug() << filename;
+        QFile file(filename);
+        file.open(QIODevice::ReadOnly);
+        QDataStream in(&file);
+
+        // Read and check the header
+        quint32 magic;
+        in >> magic;
+        if (magic != MAGIC_FILE_KIND) {
+            QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Wrong file kind.",0,this);
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+            msgBox.exec();
+            file.close();
+            return;
+        }
+
+        // Read the version
+        qint32 version;
+        in >> version;
+        if (version < MEMTYPE_FORMAT_VERSION) {
+            QMessageBox msgBox (QMessageBox::Information, tr("Info"), "File format too old.",0,this);
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+            msgBox.exec();
+            file.close();
+            return;
+        }
+        if (version > MEMTYPE_FORMAT_VERSION) {
+            QMessageBox msgBox (QMessageBox::Information, tr("Info"), "File format too new.",0,this);
+            msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+            msgBox.exec();
+            file.close();
+            return;
+        }
+
+        if (version == MEMTYPE_FORMAT_VERSION)
+            in.setVersion(QDataStream::Qt_5_8);
+
+        qint32 cred_length;
+        in >> cred_length;
+
+        QString aux;
+
+        for (int i = 0; i < cred_length; i++) {
+            auto cred = new Credential();
+            in >> aux;
+            cred->name = aux.toStdString();
+            in >> aux;
+            cred->user = aux.toStdString();
+            in >> aux;
+            cred->hop = aux.toStdString();
+            in >> aux;
+            cred->password = aux.toStdString();
+            in >> aux;
+            cred->submit = aux.toStdString();
+
+            this->mCredentials.append(cred);
+        }
+        this->renderCredentials();
+
+        QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Credentials import complete.",0,this);
+        msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+
+        file.close();
     }
 }
 
@@ -149,7 +211,32 @@ void MainWindow::exportCredentials()
     QString filename = QFileDialog::getSaveFileName(this);
 
     if (!filename.isEmpty()) {
-        qDebug() << filename;
+
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly);
+        QDataStream out(&file);
+
+        // Write a header with a "magic number", a version and the credentials length.
+        out << (quint32)MAGIC_FILE_KIND;
+        out << (qint32)MEMTYPE_FORMAT_VERSION;
+        out << (qint32)this->mCredentials.length();
+
+        out.setVersion(QDataStream::Qt_5_8);
+
+        // Write the data
+        for (auto t : this->mCredentials) {
+            out << QString().fromStdString(t->name);
+            out << QString().fromStdString(t->user);
+            out << QString().fromStdString(t->hop);
+            out << QString().fromStdString(t->password);
+            out << QString().fromStdString(t->submit);
+        }
+
+        QMessageBox msgBox (QMessageBox::Information, tr("Info"), "Credentials export complete.",0,this);
+        msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+        msgBox.exec();
+
+        file.close();
     }
 }
 

@@ -24,6 +24,11 @@
 #include <QInputDialog>
 #include <QDesktopServices>
 
+#define MAGIC_FILE_KIND  0xA0B0C033					/* MAGIC NUMBER FOR MEMTYPE BINARY FILE FORMAT */
+#define MAGIC_ENCRYPTED_FILE_KIND  0xB0C0D033			/* MAGIC NUMBER FOR MEMTYPE ENCRYPTED FILE FORMAT */
+
+#define MEMTYPE_FORMAT_VERSION 100						/* MemType File Format version 1.0.0 */
+
 namespace Ui {
 class MainWindow;
 }
