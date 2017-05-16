@@ -761,6 +761,13 @@ void MainWindow::setPinToDevice()
        return;
     }
 
+     if (ui->pinEdit->text().toInt() == new_pin1_int) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "The New PIN is the same as the current one. No action needed.",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       return;
+    }
 
     Memtype_connect();
 
