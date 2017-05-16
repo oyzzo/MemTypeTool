@@ -378,6 +378,15 @@ void MainWindow::readFromDevice()
 
     Memtype_connect();
 
+    if (!checkPINToDevice(ui->pinEdit->text().toInt())) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "The PIN is incorrect!",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       cleanPIN();
+       return;
+    }
+
     uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE);
     Memtype_readProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
     int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
@@ -464,6 +473,15 @@ void MainWindow::writeToDevice()
 
 
     Memtype_connect();
+
+    if (!checkPINToDevice(ui->pinEdit->text().toInt())) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "The PIN is incorrect!",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       cleanPIN();
+       return;
+    }
 
     /* Allocate space */
     memtype_credential_t *cred_buff = (memtype_credential_t*)malloc(MEMTYPE_BUFFER_SIZE);
@@ -771,6 +789,16 @@ void MainWindow::setPinToDevice()
 
     Memtype_connect();
 
+    if (!checkPINToDevice(ui->pinEdit->text().toInt())) {
+       QMessageBox msgBox (QMessageBox::Information, tr("Info"), "The PIN is incorrect!",0,this);
+       msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
+       msgBox.exec();
+       this->connectionTimer->start(1000);
+       cleanPIN();
+       return;
+    }
+
+
     /* read all the credentials from the device and decrypt */
     uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE);
     Memtype_readProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
@@ -815,4 +843,15 @@ void MainWindow::cleanPIN()
    if (! ui->rememberButton->isChecked()) {
        ui->pinEdit->setText("");
    }
+}
+
+// Check that the entered PIN and the Device PIN are the same
+bool MainWindow::checkPINToDevice(uint16_t pin)
+{
+    uint8_t hash_read[MEMTYPE_HASH_LENGTH];
+    uint8_t hash_entered[MEMTYPE_HASH_LENGTH];
+
+    Memtype_read_pin_hash(hash_read);
+    Memtype_pinToHash(pin,hash_entered);
+    return (memcmp(hash_read, hash_entered, MEMTYPE_HASH_LENGTH) == 0);
 }
