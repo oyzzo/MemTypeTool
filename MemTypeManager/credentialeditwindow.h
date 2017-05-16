@@ -18,6 +18,8 @@ public:
 
     void setCredential(Credential *credential);
 
+public slots:
+    void addDelay();
 signals:
     void accepted();
 

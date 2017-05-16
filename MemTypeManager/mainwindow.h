@@ -74,6 +74,7 @@ private:
     memtype_ret_t Memtype_readProgress(uint8_t *block, uint16_t len, uint16_t offset);
     void writeToDevice();
     memtype_ret_t Memtype_writeProgress(const uint8_t *block, uint16_t len, uint16_t offset);
+    void cleanPIN();
 };
 
 #endif // MAINWINDOW_H

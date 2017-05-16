@@ -8,6 +8,7 @@ CredentialEditWindow::CredentialEditWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->cancelCredentialButton, &QPushButton::clicked, this, &CredentialEditWindow::close);
     connect(ui->okCredentialButton, &QPushButton::clicked, this, &CredentialEditWindow::saveCredential);
+    connect(ui->delayButton, &QPushButton::clicked, this, &CredentialEditWindow::addDelay);
 }
 
 CredentialEditWindow::~CredentialEditWindow()
@@ -35,4 +36,8 @@ void CredentialEditWindow::saveCredential()
 
     emit accepted();
     this->close();
+}
+void CredentialEditWindow::addDelay()
+{
+    this->ui->hopEdit->setText(this->ui->hopEdit->text().prepend("⌚")); /* Unicode watch char */
 }

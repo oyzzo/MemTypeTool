@@ -13,5 +13,7 @@
         <file>img/write.png</file>
         <file>img/eye-open.png</file>
         <file>img/eraser.png</file>
+        <file>img/time.png</file>
+        <file>img/exclamation.png</file>
     </qresource>
 </RCC>

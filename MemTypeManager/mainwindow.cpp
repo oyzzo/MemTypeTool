@@ -131,6 +131,7 @@ void MainWindow::loadLayout()
        msgBox.exec();
        this->connectionTimer->start(1000);
     }
+    cleanPIN();
 }
 
 // Import credentials file
@@ -407,6 +408,7 @@ void MainWindow::readFromDevice()
     msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
     msgBox.exec();
     this->connectionTimer->start(1000);
+    cleanPIN();
 }
 
 void MainWindow::writeToDevice()
@@ -496,6 +498,7 @@ void MainWindow::writeToDevice()
     msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
     msgBox.exec();
     this->connectionTimer->start(1000);
+    cleanPIN();
 }
 
 
@@ -791,7 +794,7 @@ void MainWindow::setPinToDevice()
     msgBox.addButton(tr("&Ok"), QMessageBox::AcceptRole);
     msgBox.exec();
     this->connectionTimer->start(1000);
-
+    cleanPIN();
 }
 
 void MainWindow::showVersion()
@@ -800,3 +803,9 @@ void MainWindow::showVersion()
     versionWindow->show();
 }
 
+void MainWindow::cleanPIN()
+{
+   if (! ui->rememberButton->isChecked()) {
+       ui->pinEdit->setText("");
+   }
+}
