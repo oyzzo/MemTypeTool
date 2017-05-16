@@ -392,8 +392,6 @@ void MainWindow::readFromDevice()
     int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
     memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
 
-
-
     Memtype_decrypt(list, clen, cred_buff, MEMTYPE_BUFFER_SIZE, ui->pinEdit->text().toInt());
 
     for (int i = 0; i < clen; i++) {
