@@ -7,19 +7,45 @@ MemType Tool - New GUI For managing the [MemType Offline password keeper](http:/
 
 
 ## Install
-TODO
+Extract the release archive and run the launcher.
+If no release is provided you can compile it from sources easily.
 
-### Ubuntu
-TODO
+If no device is found when running the GUI, check the usb permissions. 
+For ubuntu users there's a udev rules file with the right permissions:
+
+sudo cp 99-MemType.rules /etc/udev/rules.d/
+reboot
+
+### Linux
+Under release folder download linux64.tar.gz for a 64 bit linux, and linux32.tar.gz for a 32 bit linux.
+
+Extract the contents:
+tar xvfz linux64.tar.gz
+
+And execute the launcher.
 
 ### MacOSX
-TODO
+No prebuilt package yet.
+Check the Compiling instructions.
 
 ### Windows
-TODO
+No prebuilt package yet.
+Check the Compiling instructions.
 
-## Running
-Click on the Icon
+## Compiling
+Compiling the sources is super easy!.
+
+1) Install QT-Creator with QT5.5 or above.
+http://www.qt.io/download-open-source
+
+2) Download and extract the sources:
+https://github.com/oyzzo/MemTypeTool/archive/master.zip
+
+3) Open the MemtypeManager project in QT-Creator.
+
+4) Click the build and run green play button!
+
+You'll find the compiled binary inside a build folder.
 
 ## Keyboards
 Using the GUI you can change the MemType keyboard layout to match your computer keyboard layout.

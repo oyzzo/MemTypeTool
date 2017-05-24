@@ -55,3 +55,4 @@ RESOURCES += \
 
 INCLUDEPATH += /usr/include/libusb-1.0
 LIBS += -lusb-1.0
+CONFIG += c++11

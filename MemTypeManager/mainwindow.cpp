@@ -174,7 +174,7 @@ void MainWindow::importCredentials()
         }
 
         if (version == MEMTYPE_FORMAT_VERSION)
-            in.setVersion(QDataStream::Qt_5_8);
+            in.setVersion(QDataStream::Qt_5_5);
 
         qint32 cred_length;
         in >> cred_length;
