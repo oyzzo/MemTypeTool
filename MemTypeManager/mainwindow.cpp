@@ -222,7 +222,7 @@ void MainWindow::exportCredentials()
         out << (qint32)MEMTYPE_FORMAT_VERSION;
         out << (qint32)this->mCredentials.length();
 
-        out.setVersion(QDataStream::Qt_5_8);
+        out.setVersion(QDataStream::Qt_5_5);
 
         // Write the data
         for (auto t : this->mCredentials) {
