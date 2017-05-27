@@ -5,6 +5,10 @@ MemType Tool - New GUI For managing the [MemType Offline password keeper](http:/
  - [Get a MemType from Tindie!!](https://www.tindie.com/products/area0x33/memtype-open-source-password-keeper/)
 
 
+## Documentation
+The documentation for the MemType can be found here:
+http://www.area0x33.com/documentation/memtype.html
+
 
 ## Install
 Extract the release archive and run the launcher.
@@ -13,14 +17,18 @@ If no release is provided you can compile it from sources easily.
 If no device is found when running the GUI, check the usb permissions. 
 For ubuntu users there's a udev rules file with the right permissions:
 
+```
 sudo cp 99-MemType.rules /etc/udev/rules.d/
 reboot
+```
+
 
 ### Linux
 Under release folder download linux64.tar.gz for a 64 bit linux, and linux32.tar.gz for a 32 bit linux.
 
 Extract the contents:
-tar xvfz linux64.tar.gz
+
+`tar xvfz linux64.tar.gz`
 
 And execute the launcher.
 
