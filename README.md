@@ -1,74 +1,65 @@
 # MemTypeTool
-MemType Tool - GUI For managing the [MemType Offline password keeper](http://www.area0x33.com/blog/?page_id=329):
+MemType Tool - New GUI For managing the [MemType Offline password keeper](http://www.area0x33.com/blog/?page_id=329):
  - [Project Sources.](https://github.com/jim17/memtype)
  - [Hackaday.io Project Page and build logs.](https://hackaday.io/project/8342-memtype-open-source-password-keeper)
  - [Get a MemType from Tindie!!](https://www.tindie.com/products/area0x33/memtype-open-source-password-keeper/)
 
 
-![screenshot](screenshots/screenshot.png)
+## Documentation
+The documentation for the MemType can be found here:
+http://www.area0x33.com/documentation/memtype.html
 
 
-##Install
-Make sure you have `python`, `pyusb` and `PyQt4` installed.
+## Install
+Extract the release archive and run the launcher.
+If no release is provided you can compile it from sources easily.
 
-###Ubuntu
-
-Ubuntu Installation:
+If no device is found when running the GUI, check the usb permissions. 
+For ubuntu users there's a udev rules file with the right permissions:
 
 ```
-apt-get install python
-apt-get install python-pyqt4
-pip install pyusb
+sudo cp 99-MemType.rules /etc/udev/rules.d/
+reboot
 ```
 
-###MacOSX
-Install python and pyqt4 using brew or mac ports. Then install pyusb using pip.
 
-###Windows
-1) Install Python 2.7:
+### Linux
+Under release folder download linux64.tar.gz for a 64 bit linux, and linux32.tar.gz for a 32 bit linux.
 
-`https://www.python.org/downloads/`
+Extract the contents:
 
-2) Add python to your PATH:
-`C:\Python27\;C:\Python27\Scripts\`
+`tar xvfz linux64.tar.gz`
 
-3) Download and Install PyQt4 (Py2.7):
-`https://riverbankcomputing.com/software/pyqt/download`
+And execute the launcher.
 
-4) Download, unzip and isntall pyusb:
-`https://github.com/walac/pyusb/archive/master.zip`
+### MacOSX
+No prebuilt package yet.
+Check the Compiling instructions.
 
-`python setup.py install`
+### Windows
+No prebuilt package yet.
+Check the Compiling instructions.
 
-5)Plug in the Memtype and let windows install the drivers for the device (we'll change them in the next step).
+## Compiling
+Compiling the sources is super easy!.
 
-6)Download and extract libusb-win32:
-`http://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/libusb-win32-bin-1.2.6.0.zip/download`
+1) Install QT-Creator with QT5.5 or above.
+http://www.qt.io/download-open-source
 
-7) Execute install-filter-win (find it inside extracted folder, under /bin/x86 or other if your windows is 64bits)
+2) Download and extract the sources:
+https://github.com/oyzzo/MemTypeTool/archive/master.zip
 
--Select Install Filter, next.
+3) Open the MemtypeManager project in QT-Creator.
 
-![screenshot](screenshots/install-filter-win-1.png)
+4) Click the build and run green play button!
 
--Select Memtype (pid a033) and click Install
+You'll find the compiled binary inside a build folder.
 
-![screenshot](screenshots/install-filter-win-2.png)
-
-8)Done!!! you can check it with the testlibusb-win found next to install-filter-win:
-
-![screenshot](screenshots/testlibusb-win.png)
-
-##Running
-To run the **MemTypeTool**:
-
-`python main.py`
-
-##Keyboards
+## Keyboards
 Using the GUI you can change the MemType keyboard layout to match your computer keyboard layout.
 The current available layouts files are located under `keyboard` directory.
 
-##About
+## About
 
 * Miguel Angel Borrego
 * Noel Carriquí
