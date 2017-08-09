@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>471</width>
-    <height>309</height>
+    <height>411</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -51,7 +51,7 @@
         </font>
        </property>
        <property name="text">
-        <string>MemType Tool v1.0.0</string>
+        <string>MemType Tool v1.0.1</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

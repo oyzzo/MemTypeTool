@@ -396,11 +396,16 @@ void MainWindow::readFromDevice()
 
     for (int i = 0; i < clen; i++) {
         auto cred = new Credential();
-        cred->name = list[i].name;
-        cred->user = list[i].user;
-        cred->hop = list[i].hop;
-        cred->password = list[i].pass;
-        cred->submit = list[i].submit;
+        string strname(list[i].name);
+        cred->name = strname;
+        string struser(list[i].user);
+        cred->user = struser;
+        string strhop(list[i].hop);
+        cred->hop = strhop;
+        string strpass(list[i].pass);
+        cred->password = strpass;
+        string strsubmit(list[i].submit);
+        cred->submit = strsubmit;
 
         this->mCredentials.append(cred);
     }
