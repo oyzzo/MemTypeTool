@@ -387,7 +387,7 @@ void MainWindow::readFromDevice()
        return;
     }
 
-    uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE);
+    uint8_t *cred_buff = (uint8_t*)malloc(MEMTYPE_BUFFER_SIZE*2);
     Memtype_readProgress(cred_buff, MEMTYPE_BUFFER_SIZE, 0);
     int clen = Memtype_credLen(cred_buff, MEMTYPE_BUFFER_SIZE);
     memtype_credential_t *list = (memtype_credential_t *) malloc(sizeof(memtype_credential_t) * clen);
