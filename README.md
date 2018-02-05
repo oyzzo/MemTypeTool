@@ -10,9 +10,14 @@ The documentation for the MemType can be found here:
 http://www.area0x33.com/documentation/memtype.html
 
 
-## Install
-Extract the release archive and run the launcher.
-If no release is provided you can compile it from sources easily.
+## Linux
+Under release folder download linux64.tar.gz for a 64 bit linux.
+
+Extract the contents:
+
+`tar xvfz linux64.tar.gz`
+
+And execute the launcher.
 
 If no device is found when running the GUI, check the usb permissions. 
 For ubuntu users there's a udev rules file with the right permissions:
@@ -22,23 +27,21 @@ sudo cp 99-MemType.rules /etc/udev/rules.d/
 reboot
 ```
 
+## Windows, MacOSX & Others.
+There is a virtualbox Lubuntu image with MemType GUI preinstalled that runs in any OS where virtualbox can be run.
 
-### Linux
-Under release folder download linux64.tar.gz for a 64 bit linux, and linux32.tar.gz for a 32 bit linux.
+1) Install VirtualBox and the Extension pack.
+https://www.virtualbox.org/
 
-Extract the contents:
+2) Download and extract (using 7-Zip) the Lubuntu image:
+https://github.com/oyzzo/MemTypeTool/releases/download/1.0.1/Lubuntu.17.04.64bit.vmdk.7z
 
-`tar xvfz linux64.tar.gz`
+3) Create a new Linux (Ubuntu) 64bit Machine in VirtualBox, when asked for the disk open 
+the extracted Lubuntu vdk image.
 
-And execute the launcher.
+4) Run it and add the memtype device (Devices --> USB) to the virtual machine.
 
-### MacOSX
-No prebuilt package yet.
-Check the Compiling instructions.
-
-### Windows
-No prebuilt package yet.
-Check the Compiling instructions.
+Done!
 
 ## Compiling
 Compiling the sources is super easy!.
