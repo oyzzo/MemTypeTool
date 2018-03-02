@@ -41,6 +41,7 @@ the extracted Lubuntu vdk image.
 
 4) Run it and add the memtype device (Devices --> USB) to the virtual machine.
 
+NOTE: The password for the virtualmachine user is same as the user name: memtype.
 Done!
 
 ## Compiling
